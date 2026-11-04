@@ -88,6 +88,8 @@ The body is forwarded unchanged, with two repairs: a body with no `jsonrpc`/`met
 
 Each header is also sent as `X-OpenAgora-*`, its name before the rename, so agents already reading those keep working. New code should read `X-LinkAgora-*`.
 
+Until November 2026 the public deployment signed with a development value published in this repository. It now uses a private secret, so a check against that old value no longer passes.
+
 The signature covers the request ID, timestamp and caller ID only — not the trust level, caller name or body. Checking it requires the gateway secret, which only the deployment's operator holds.
 
 Two more headers are added when they apply:
