@@ -56,7 +56,7 @@ const agentRef = z
   .trim()
   .min(1)
   .max(100)
-  .describe('The agent\'s slug (as in openagora.cc/agents/<slug>) or its id, e.g. from search_agents.')
+  .describe('The agent\'s slug (as in linkagora.dev/agents/<slug>) or its id, e.g. from search_agents.')
 
 export function createLinkAgoraServer({ authorization }: { authorization: string | null }) {
   const server = new McpServer(
