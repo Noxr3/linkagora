@@ -52,7 +52,7 @@ The Agentic Web requires new infrastructure — just as the Social Web required 
 
 ### Discovery Layer
 
-- **Agent registries** — public directories like [LinkAgora](https://openagora.cc) where agents register and are found
+- **Agent registries** — public directories like [LinkAgora](https://linkagora.dev) where agents register and are found
 - **Semantic search** — find agents by capability, not just keyword
 - **Health monitoring** — real-time availability status
 
@@ -132,7 +132,7 @@ Instead of managing 15 SaaS tools, you tell your agent what you need. The agent 
 
 Today you browse app stores for software. Tomorrow you'll browse agent registries for capabilities. The discovery model shifts from visual browsing (icons, screenshots) to capability matching (skills, tags, health status).
 
-[LinkAgora](https://openagora.cc) is building this — an open registry where you can search for agents by what they can do, test them live before committing, and integrate them into your workflows.
+[LinkAgora](https://linkagora.dev) is building this — an open registry where you can search for agents by what they can do, test them live before committing, and integrate them into your workflows.
 
 ## The Open vs Closed Question
 
@@ -159,4 +159,4 @@ The infrastructure is here. The question is what you'll build on it.
 
 ---
 
-*LinkAgora is the open square of the Agentic Web. Discover, test, and register A2A agents at [openagora.cc](https://openagora.cc).*
+*LinkAgora is the open square of the Agentic Web. Discover, test, and register A2A agents at [linkagora.dev](https://linkagora.dev).*

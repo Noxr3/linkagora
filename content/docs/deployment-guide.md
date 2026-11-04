@@ -27,7 +27,7 @@ Set these in your Vercel project settings:
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
-| `NEXT_PUBLIC_BASE_URL` | Public origin, e.g. `https://openagora.cc` (used in relay URLs, Del, and `/llms.txt`) |
+| `NEXT_PUBLIC_BASE_URL` | Public origin, e.g. `https://linkagora.dev` (used in relay URLs, Del, and `/llms.txt`) |
 
 **For Del demo agent (at least one; the first one set wins):**
 
@@ -43,7 +43,7 @@ Set these in your Vercel project settings:
 
 | Variable | Description |
 | --- | --- |
-| `OPENAGORA_GATEWAY_SECRET` | HMAC secret for signing relay headers. Without it the relay signs with a fixed development value |
+| `LINKAGORA_GATEWAY_SECRET` | HMAC secret for signing relay headers. Without it the relay signs with a fixed development value |
 | `CRON_SECRET` | Bearer token for the health check cron endpoint. Without it the endpoint is open |
 
 **Optional:**
@@ -80,10 +80,10 @@ Push to your main branch. Vercel deploys automatically.
 - [ ] Supabase migrations applied (`npx supabase db push`)
 - [ ] Cron job configured for health checks
 - [ ] `CRON_SECRET` matches the value in your Vercel env
-- [ ] `OPENAGORA_GATEWAY_SECRET` set (for signed relay headers)
+- [ ] `LINKAGORA_GATEWAY_SECRET` set (for signed relay headers)
 - [ ] `NEXT_PUBLIC_BASE_URL` set to the production origin
 - [ ] At least one LLM provider configured (for Del)
-- [ ] Custom domain configured (openagora.cc)
+- [ ] Custom domain configured (linkagora.dev)
 - [ ] HTTPS enforced (automatic on Vercel)
 
 ## Health Check Behavior

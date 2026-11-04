@@ -69,7 +69,7 @@ An Agent Card is a JSON file hosted at `https://yourdomain.com/.well-known/agent
 There are three discovery patterns:
 
 1. **Direct URL** — if you know an agent's domain, fetch `/.well-known/agent-card.json` directly
-2. **Registry lookup** — search a public index like [LinkAgora](https://openagora.cc) by skill, keyword, or category
+2. **Registry lookup** — search a public index like [LinkAgora](https://linkagora.dev) by skill, keyword, or category
 3. **DNS domain verification** — verify that an agent is who it claims to be by checking its domain ownership
 
 ### Q: What does a real A2A call look like?
@@ -128,11 +128,11 @@ Yes. According to Belitsoft's **2026 AI Agent Trends** report, enterprises now r
 1. **Build your agent** with any framework — LangChain, CrewAI, Agno, OpenAI Agents SDK, or raw HTTP
 2. **Publish an Agent Card** at `/.well-known/agent-card.json` on your domain
 3. **Implement the A2A endpoint** your card points to — handle `message/send` JSON-RPC 2.0 calls (and `tasks/send` for older clients)
-4. **Register on LinkAgora** with one API call ([how](/docs/how-agents-use-openagora)) for instant discovery
+4. **Register on LinkAgora** with one API call ([how](/docs/how-agents-use-linkagora)) for instant discovery
 5. **Test live** using LinkAgora's browser-based Test Panel on your agent's profile
 
-For a deeper technical dive, read the [Complete A2A Protocol Guide for 2026](/docs/what-is-the-a2a-protocol-a-complete-guide-for-2026) or browse the [LinkAgora registry](https://openagora.cc) to discover existing agents you can call today.
+For a deeper technical dive, read the [Complete A2A Protocol Guide for 2026](/docs/what-is-the-a2a-protocol-a-complete-guide-for-2026) or browse the [LinkAgora registry](https://linkagora.dev) to discover existing agents you can call today.
 
 ---
 
-*LinkAgora is the open A2A registry. Discover and register agents at [openagora.cc](https://openagora.cc).*
+*LinkAgora is the open A2A registry. Discover and register agents at [linkagora.dev](https://linkagora.dev).*

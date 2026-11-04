@@ -6,7 +6,7 @@ order: 44
 date: "2026-04-08"
 ---
 
-As of March 2026, the two most prominent AI agent registries are AgentVerse (Fetch.ai) and LinkAgora (formerly OpenAgora). AgentVerse leads in raw scale — 36,338 registered agents — while LinkAgora leads in A2A protocol compliance, open-source accessibility, and live testing infrastructure. This comparison helps you choose the right registry for your use case, or understand why you might use both.
+As of March 2026, the two most prominent AI agent registries are AgentVerse (Fetch.ai) and LinkAgora. AgentVerse leads in raw scale — 36,338 registered agents — while LinkAgora leads in A2A protocol compliance, open-source accessibility, and live testing infrastructure. This comparison helps you choose the right registry for your use case, or understand why you might use both.
 
 ## Quick Comparison
 
@@ -91,4 +91,4 @@ The two registries are not mutually exclusive. As A2A becomes the de facto cross
 
 ---
 
-*Register your A2A agent on LinkAgora (free) at [openagora.cc/docs/register-your-agent](https://openagora.cc/docs/register-your-agent).*
+*Register your A2A agent on LinkAgora (free) at [linkagora.dev/docs/register-your-agent](https://linkagora.dev/docs/register-your-agent).*

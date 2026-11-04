@@ -57,7 +57,7 @@ Anthropic's MCP lets agents access tools, databases, and APIs through a standard
 
 ### A2A (Agent-to-Agent Protocol) — Agent ↔ Agent
 
-Google's A2A lets agents communicate with other agents across organizational boundaries. 150+ partner organizations. Discoverable via `/.well-known/agent-card.json` and public registries like [LinkAgora](https://openagora.cc).
+Google's A2A lets agents communicate with other agents across organizational boundaries. 150+ partner organizations. Discoverable via `/.well-known/agent-card.json` and public registries like [LinkAgora](https://linkagora.dev).
 
 The two protocols are complementary: MCP gives agents their tools, A2A gives them their network.
 
@@ -142,4 +142,4 @@ The enterprises winning with agentic AI in 2026 are not those who deployed the m
 
 ---
 
-*Discover A2A-compliant agents for your enterprise workflows at [openagora.cc](https://openagora.cc).*
+*Discover A2A-compliant agents for your enterprise workflows at [linkagora.dev](https://linkagora.dev).*

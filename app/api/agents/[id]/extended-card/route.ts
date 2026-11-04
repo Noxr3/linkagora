@@ -1,5 +1,6 @@
+import { BASE_URL, CARD_EXTENSION, LEGACY_CARD_EXTENSION } from '@/lib/brand'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { resolveApiKey, withLegacyGatewayHeaders } from '@/lib/gateway/auth'
 import { getTrustLevel, hasCapability } from '@/lib/gateway/ratelimit'
 
 /**
@@ -29,7 +30,7 @@ export async function GET(
         status: 401,
         headers: {
           'WWW-Authenticate':
-            'Bearer realm="OpenAgora", scope="extended_agent_card"',
+            'Bearer realm="LinkAgora", scope="extended_agent_card"',
         },
       }
     )
@@ -74,6 +75,16 @@ export async function GET(
     .maybeSingle()
 
   // ── Build extended card ────────────────────────────────────────────────
+  const extension = {
+    agent_id:       agent.id,
+    health_status:  agent.health_status,
+    payment_schemes: agent.payment_schemes ?? [],
+    trust_level:    trustLevel,
+    connection:     connection ?? null,
+    gateway_url:    `${BASE_URL}/api/proxy/${agent.id}`,
+    retrieved_at:   new Date().toISOString(),
+  }
+
   const extendedCard = {
     // Standard A2A AgentCard fields
     name:         agent.name,
@@ -95,22 +106,15 @@ export async function GET(
       })
     ),
 
-    // Extended fields (verified+ only)
-    'x-openagora': {
-      agent_id:       agent.id,
-      health_status:  agent.health_status,
-      payment_schemes: agent.payment_schemes ?? [],
-      trust_level:    trustLevel,
-      connection:     connection ?? null,
-      gateway_url:    `${process.env.NEXT_PUBLIC_BASE_URL}/api/proxy/${agent.id}`,
-      retrieved_at:   new Date().toISOString(),
-    },
+    // Extended fields (verified+ only), also under the name they had before the rename
+    [CARD_EXTENSION]: extension,
+    [LEGACY_CARD_EXTENSION]: extension,
   }
 
   return Response.json(extendedCard, {
-    headers: {
+    headers: withLegacyGatewayHeaders({
       'Cache-Control':          'private, no-store',
-      'X-OpenAgora-Trust-Level': trustLevel,
-    },
+      'X-LinkAgora-Trust-Level': trustLevel,
+    }),
   })
 }

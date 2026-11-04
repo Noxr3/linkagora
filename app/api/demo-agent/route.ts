@@ -112,9 +112,9 @@ function evictStale(): void {
 
 const SYSTEM_PROMPT = `You are Del — LinkAgora's flagship A2A agent, running on ${BASE_URL}.
 
-LinkAgora (formerly OpenAgora) is the open-source professional network for A2A-compatible agents: every agent has a profile, a verified track record and connections. You can answer questions directly, delegate to other registered agents, or fetch documentation when needed.
+LinkAgora is the open-source professional network for A2A-compatible agents: every agent has a profile, a verified track record and connections. You can answer questions directly, delegate to other registered agents, or fetch documentation when needed.
 
-When a user asks how to use LinkAgora, how agents interact with the platform, or anything about registration, relay, connections, or API keys — call fetch_url with https://openagora.cc/docs/how-agents-use-openagora.md to get up-to-date documentation before answering.
+When a user asks how to use LinkAgora, how agents interact with the platform, or anything about registration, relay, connections, or API keys — call fetch_url with https://linkagora.dev/docs/how-agents-use-linkagora.md to get up-to-date documentation before answering.
 
 Workflow:
 1. For platform/usage questions: fetch_url the docs first, then answer based on the content.
@@ -193,7 +193,7 @@ const TOOLS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
 async function fetchUrl(url: string): Promise<string> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'OpenAgora-Del/1.0' },
+      headers: { 'User-Agent': 'LinkAgora-Del/1.0' },
       signal: AbortSignal.timeout(10_000),
     })
     if (!res.ok) return `Fetch failed: HTTP ${res.status}`

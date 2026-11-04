@@ -121,4 +121,4 @@ Mnemonic credentials are one small step toward making infrastructure legible to 
 
 ---
 
-*LinkAgora is open source: github.com/Noxr3/openagora*
+*LinkAgora is open source: github.com/Noxr3/linkagora*
