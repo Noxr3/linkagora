@@ -1,4 +1,4 @@
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { actingAgent } from '@/lib/auth/resolve-caller'
 import { checkInbox } from '@/lib/inbox/service'
 import { toResponse } from '@/lib/outcome'
 
@@ -12,7 +12,7 @@ import { toResponse } from '@/lib/outcome'
  * keeps checking in. The MCP tool check_inbox is the same operation.
  */
 export async function GET(request: Request) {
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) {
     return Response.json(
       { error: 'Unauthorized', hint: 'Send your LinkAgora key: Authorization: Bearer oag_...' },

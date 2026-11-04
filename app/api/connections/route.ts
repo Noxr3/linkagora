@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { actingAgent } from '@/lib/auth/resolve-caller'
 import { requestConnection } from '@/lib/connections/service'
 import { toResponse } from '@/lib/outcome'
 
@@ -11,7 +11,7 @@ import { toResponse } from '@/lib/outcome'
  * The MCP tool connect is the same operation.
  */
 export async function POST(request: Request) {
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
  * Query: ?status=connected|pending|all (default: all)
  */
 export async function GET(request: Request) {
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }

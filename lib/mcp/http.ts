@@ -1,7 +1,7 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
 import { BASE_URL, BRAND } from '@/lib/brand'
 import { ACCESS_TOKEN_PREFIX, bearerChallenge, bearerToken, type McpPath } from '@/lib/oauth/rules'
-import { resolveAccessToken } from '@/lib/oauth/store'
+import { resolveCaller } from '@/lib/auth/resolve-caller'
 import { ACTING_TOOLS, createLinkAgoraServer, type McpIdentity } from './server'
 
 /**
@@ -25,7 +25,7 @@ import { ACTING_TOOLS, createLinkAgoraServer, type McpIdentity } from './server'
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Authorization, Content-Type, Accept, Mcp-Protocol-Version, Mcp-Session-Id, Last-Event-ID',
+  'Access-Control-Allow-Headers': 'Authorization, Content-Type, Accept, LinkAgora-Agent, Mcp-Protocol-Version, Mcp-Session-Id, Last-Event-ID',
   'Access-Control-Expose-Headers': 'Mcp-Session-Id, Mcp-Protocol-Version, WWW-Authenticate',
 }
 
@@ -73,16 +73,20 @@ export async function handleMcpPost(request: Request, path: McpPath): Promise<Re
 
   let identity: McpIdentity = { kind: 'none' }
   if (token?.startsWith(ACCESS_TOKEN_PREFIX)) {
-    const found = await resolveAccessToken(token)
-    if (!found) {
+    const { caller, refusal } = await resolveCaller(request, 'mcp')
+    if (refusal?.status === 403) {
+      return withCors(Response.json({ jsonrpc: '2.0', error: { code: -32003, message: refusal.message }, id: null }, { status: 403 }))
+    }
+    if (!caller) {
       return challenge(path, `Your ${BRAND} sign-in expired or was revoked. Sign in again.`, null, {
         code: 'invalid_token',
         description: 'The access token is invalid, expired or revoked.',
       })
     }
-    identity = { kind: 'oauth', agentId: found.agentId }
+    identity = { kind: 'oauth', agentId: caller.agentId }
   } else if (authorization) {
-    identity = { kind: 'key', authorization }
+    // Checked only if a tool needs it: reading the directory should not spend a query on a key.
+    identity = { kind: 'key', resolve: () => resolveCaller(request, 'mcp') }
   } else {
     const call = path === '/mcp/oauth' ? null : await peekActingTool(request)
     if (path === '/mcp/oauth' || call) {

@@ -1,6 +1,6 @@
 import { BASE_URL } from '@/lib/brand'
 import { authorizePath, checkAuthorizationRequest, signedInUser, type AuthorizeParams } from '@/lib/oauth/authorize'
-import { clientRedirect } from '@/lib/oauth/rules'
+import { ACCOUNT_SCOPE, clientRedirect } from '@/lib/oauth/rules'
 import { eligibleAgents, issueCode } from '@/lib/oauth/store'
 
 /**
@@ -14,8 +14,9 @@ import { eligibleAgents, issueCode } from '@/lib/oauth/store'
  * (RFC 9700 §4.11.2). The consent page offers a link back instead.
  *
  * POST is the consent form. It checks everything again from the submitted
- * fields, confirms the signed-in account owns the agent it picked, and sends
- * the browser back to the app with a single-use code.
+ * fields, confirms the signed-in account owns the agent it picked (the command
+ * line's account-wide sign-in picks none), and sends the browser back to the
+ * app with a single-use code.
  */
 
 function redirectTo(location: string, status: 302 | 303 = 302) {
@@ -80,16 +81,21 @@ export async function POST(request: Request) {
     )
   }
 
-  const agentId = typeof params.agent_id === 'string' ? params.agent_id : ''
-  const agent = (await eligibleAgents(user.id)).find((candidate) => candidate.id === agentId)
-  if (!agent) {
-    return page('Pick one of your agents', 'The app can only act as an agent your account has claimed. Go back and choose one.', 400)
+  // The account-wide scope names no agent now: each request names one, and ownership is checked then.
+  let agentId: string | null = null
+  if (auth.scope !== ACCOUNT_SCOPE) {
+    const picked = typeof params.agent_id === 'string' ? params.agent_id : ''
+    const agent = (await eligibleAgents(user.id)).find((candidate) => candidate.id === picked)
+    if (!agent) {
+      return page('Pick one of your agents', 'The app can only act as an agent your account has claimed. Go back and choose one.', 400)
+    }
+    agentId = agent.id
   }
 
   const code = await issueCode({
     client: auth.client,
     userId: user.id,
-    agentId: agent.id,
+    agentId,
     redirectUri: auth.redirectUri,
     codeChallenge: auth.codeChallenge,
     scope: auth.scope,

@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { actingAgent } from '@/lib/auth/resolve-caller'
 import { respondToConnection } from '@/lib/connections/service'
 import { toResponse } from '@/lib/outcome'
 
@@ -17,7 +17,7 @@ export async function PUT(
 ) {
   const { id } = await params
 
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -41,7 +41,7 @@ export async function DELETE(
 ) {
   const { id } = await params
 
-  const caller = await resolveApiKey(_request.headers.get('authorization'))
+  const caller = await actingAgent(_request)
   if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }

@@ -21,6 +21,12 @@ import {
   resourceIdentifiers,
   s256,
   safeNextPath,
+  grantedScope,
+  registeredRedirectUris,
+  ACCOUNT_SCOPE,
+  CLI_CALLBACK_PATH,
+  CLI_CLIENT_ID,
+  SCOPE,
 } from '../lib/oauth/rules.ts'
 
 const BASE = 'https://linkagora.dev'
@@ -328,4 +334,30 @@ test('metadataCacheSeconds follows Cache-Control within bounds', () => {
   assert.equal(metadataCacheSeconds('max-age=abc'), 0)
   assert.equal(metadataCacheSeconds(undefined), 300)
   assert.equal(metadataCacheSeconds('public'), 300)
+})
+
+test('only the command line can ask for the whole account', () => {
+  assert.equal(grantedScope('oagc_someone', undefined), SCOPE)
+  assert.equal(grantedScope('oagc_someone', 'agent'), SCOPE)
+  assert.equal(grantedScope('oagc_someone', 'offline_access agent mcp'), SCOPE)
+  assert.equal(grantedScope('oagc_someone', 'agents'), null)
+  assert.equal(grantedScope('oagc_someone', 'agent agents'), null)
+  assert.equal(grantedScope('https://claude.ai/oauth/claude-code-client-metadata', 'agents'), null)
+  assert.equal(grantedScope(CLI_CLIENT_ID, 'agents'), ACCOUNT_SCOPE)
+  // Asking for less gets less, even for the command line.
+  assert.equal(grantedScope(CLI_CLIENT_ID, undefined), SCOPE)
+  // Not advertised: no other client should be led to ask for it.
+  assert.deepEqual(authorizationServerMetadata(BASE).scopes_supported, [SCOPE])
+})
+
+test('the command line comes back to a loopback port or this site\'s paste page, nowhere else', () => {
+  const stored = ['http://127.0.0.1/callback']
+  const registered = registeredRedirectUris(CLI_CLIENT_ID, stored, BASE)
+  assert.equal(matchRedirectUri(registered, 'http://127.0.0.1:49152/callback'), true)
+  assert.equal(matchRedirectUri(registered, `${BASE}${CLI_CALLBACK_PATH}`), true)
+  assert.equal(matchRedirectUri(registered, 'http://127.0.0.1:49152/elsewhere'), false)
+  assert.equal(matchRedirectUri(registered, 'http://localhost:49152/callback'), false)
+  assert.equal(matchRedirectUri(registered, `https://evil.example${CLI_CALLBACK_PATH}`), false)
+  // Other clients do not inherit the paste page.
+  assert.deepEqual(registeredRedirectUris('oagc_someone', stored, BASE), stored)
 })

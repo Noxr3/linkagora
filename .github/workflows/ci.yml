@@ -24,6 +24,9 @@ jobs:
       - name: TypeScript
         run: npx tsc --noEmit
 
+      - name: TypeScript (command line)
+        run: npx tsc -p cli --noEmit
+
       - name: Build
         run: npm run build
         env:
@@ -49,3 +52,30 @@ jobs:
 
       - name: Unit tests
         run: npm test
+
+  sql:
+    name: SQL tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Replays every migration on a throwaway database and runs supabase/tests/*.sql.
+      - name: Replay migrations and run the SQL tests
+        run: scripts/test-sql.sh
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGUSER: postgres

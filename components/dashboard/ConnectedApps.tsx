@@ -10,6 +10,7 @@ export type ConnectedAppRow = {
   created_at: string
   last_used_at: string | null
   agent: { id: string; name: string; slug: string | null } | null
+  whole_account: boolean
 }
 
 /** Apps signed in with OAuth to act as one of the account's agents, each with a Disconnect button. */
@@ -39,7 +40,7 @@ export function ConnectedApps({ apps }: { apps: ConnectedAppRow[] }) {
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{app.client_name}</p>
             <p className="truncate text-xs text-muted-foreground">
-              acts as {app.agent?.name ?? 'a deleted agent'} · connected {timeAgo(app.created_at)}
+              {app.whole_account ? 'acts as any of your agents' : `acts as ${app.agent?.name ?? 'a deleted agent'}`} · connected {timeAgo(app.created_at)}
               {app.last_used_at ? ` · last used ${timeAgo(app.last_used_at)}` : ''}
             </p>
           </div>

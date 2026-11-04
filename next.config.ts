@@ -55,6 +55,16 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "no-store" },
         ],
       },
+      {
+        // The page that shows a sign-in code to paste into a terminal: plain HTML
+        // with nothing to run or load. Later rules win over the one above, and over
+        // anything the route itself sets, so this is where its headers have to live.
+        source: "/oauth/cli/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
     ];
   },
   async rewrites() {

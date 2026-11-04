@@ -1,11 +1,11 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { actingAgent } from '@/lib/auth/resolve-caller'
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }

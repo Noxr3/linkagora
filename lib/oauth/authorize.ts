@@ -1,6 +1,6 @@
 import { BASE_URL } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/server'
-import { clientRedirect, isValidCodeChallenge, matchRedirectUri, normalizeResource, SCOPE } from './rules'
+import { ACCOUNT_SCOPE, clientRedirect, grantedScope, isValidCodeChallenge, matchRedirectUri, normalizeResource, registeredRedirectUris } from './rules'
 import { loadClient, type OAuthClient } from './store'
 
 /**
@@ -72,16 +72,17 @@ export async function checkAuthorizationRequest(params: AuthorizeParams): Promis
   }
   const client = lookup.client
 
+  const registered = registeredRedirectUris(client.id, client.redirect_uris, BASE_URL)
   const presented = single(params, 'redirect_uri')
   let redirectUri: string
   if (presented === null) {
     return { kind: 'fatal', title: 'Invalid request', message: 'redirect_uri was sent more than once.' }
   } else if (presented === undefined) {
-    if (client.redirect_uris.length !== 1) {
+    if (registered.length !== 1) {
       return { kind: 'fatal', title: 'Invalid request', message: 'The app did not say where to send you back (redirect_uri is missing).' }
     }
-    redirectUri = client.redirect_uris[0]
-  } else if (matchRedirectUri(client.redirect_uris, presented)) {
+    redirectUri = registered[0]
+  } else if (matchRedirectUri(registered, presented)) {
     redirectUri = presented
   } else {
     return {
@@ -109,14 +110,21 @@ export async function checkAuthorizationRequest(params: AuthorizeParams): Promis
     return back('invalid_request', 'PKCE is required: code_challenge must be the base64url SHA-256 of the code_verifier.')
   }
 
+  const scope = grantedScope(client.id, single(params, 'scope'))
+  if (!scope) return back('invalid_scope', 'Only the LinkAgora command line may ask to act as every agent on an account.')
+
   // RFC 8707: the token is for this MCP server; anything else is refused.
   const named = values(params, 'resource').map((value) => normalizeResource(value, BASE_URL))
   if (named.some((value) => value === null) || new Set(named).size > 1) {
     return back('invalid_target', `This server issues tokens only for ${BASE_URL}/mcp.`)
   }
-  const resource = named[0] ?? `${BASE_URL}/mcp`
+  // A token for the whole account works at every door, so it names the whole site.
+  if (scope === ACCOUNT_SCOPE && named[0] && named[0] !== BASE_URL) {
+    return back('invalid_target', `This sign-in is for all of ${BASE_URL}.`)
+  }
+  const resource = named[0] ?? (scope === ACCOUNT_SCOPE ? BASE_URL : `${BASE_URL}/mcp`)
 
-  return { kind: 'ok', request: { client, redirectUri, codeChallenge, state, scope: SCOPE, resource } }
+  return { kind: 'ok', request: { client, redirectUri, codeChallenge, state, scope, resource } }
 }
 
 /** /oauth/authorize with the same parameters, to come back to after signing in. */

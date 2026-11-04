@@ -4,6 +4,7 @@ import { fetchClientMetadataDocument } from './client-metadata'
 import {
   ACCESS_TOKEN_PREFIX,
   ACCESS_TOKEN_SECONDS,
+  ACCOUNT_SCOPE,
   CLIENT_ID_PREFIX,
   CLIENT_SECRET_PREFIX,
   CODE_SECONDS,
@@ -196,7 +197,8 @@ export async function eligibleAgents(userId: string) {
 export async function issueCode(input: {
   client: OAuthClient
   userId: string
-  agentId: string
+  /** Null only for ACCOUNT_SCOPE, where each request names its agent. */
+  agentId: string | null
   redirectUri: string
   codeChallenge: string
   scope: string
@@ -278,11 +280,20 @@ export async function rotateRefreshToken(input: { refreshToken: string; clientId
   return settle(data, error, pair)
 }
 
+export type ResolvedAccessToken = {
+  /** Null for ACCOUNT_SCOPE: the token is the account's consent, and each request names its agent. */
+  agentId: string | null
+  userId: string
+  grantId: string
+  scope: string
+  resource: string
+}
+
 /**
- * The agent an access token acts as, or null: unknown, expired, revoked, the
+ * Who an access token stands for, or null: unknown, expired, revoked, the
  * agent changed hands, or it is the shared test agent.
  */
-export async function resolveAccessToken(token: string): Promise<{ agentId: string; grantId: string; resource: string } | null> {
+export async function resolveAccessToken(token: string): Promise<ResolvedAccessToken | null> {
   if (!token.startsWith(ACCESS_TOKEN_PREFIX)) return null
   const [{ data, error }, shared] = await Promise.all([
     supabaseAdmin.rpc('oauth_resolve_access_token', { p_token_hash: sha256(token) }),
@@ -292,9 +303,12 @@ export async function resolveAccessToken(token: string): Promise<{ agentId: stri
     console.error('[oauth] resolving an access token failed:', error.message)
     return null
   }
-  const row = (Array.isArray(data) ? data[0] : data) as { agent_id: string; grant_id: string; resource: string } | undefined
-  if (!row || row.agent_id === shared) return null
-  return { agentId: row.agent_id, grantId: row.grant_id, resource: row.resource }
+  const row = (Array.isArray(data) ? data[0] : data) as
+    | { agent_id: string | null; user_id: string; grant_id: string; scope: string; resource: string }
+    | undefined
+  // An account-wide token names no agent, and with no shared agent configured both sides are null.
+  if (!row || (row.agent_id !== null && row.agent_id === shared)) return null
+  return { agentId: row.agent_id, userId: row.user_id, grantId: row.grant_id, scope: row.scope, resource: row.resource }
 }
 
 /**
@@ -319,14 +333,16 @@ export type ConnectedApp = {
   created_at: string
   last_used_at: string | null
   client_name: string
-  agent: { id: string; name: string; slug: string | null }
+  /** Null when the app may act as every agent on the account (the command line), or the agent is gone. */
+  agent: { id: string; name: string; slug: string | null } | null
+  whole_account: boolean
 }
 
 /** The account's live grants, for the dashboard. Null when the tables are not there yet. */
 export async function listConnectedApps(userId: string): Promise<ConnectedApp[] | null> {
   const { data, error } = await supabaseAdmin
     .from('oauth_grants')
-    .select('id, created_at, last_used_at, client:oauth_clients(client_name), agent:agents(id, name, slug)')
+    .select('id, created_at, last_used_at, scope, client:oauth_clients(client_name), agent:agents(id, name, slug)')
     .eq('user_id', userId)
     .is('revoked_at', null)
     .order('created_at', { ascending: false })
@@ -339,7 +355,8 @@ export async function listConnectedApps(userId: string): Promise<ConnectedApp[] 
       created_at: row.created_at,
       last_used_at: row.last_used_at,
       client_name: (client as { client_name?: string } | null)?.client_name ?? 'Unknown app',
-      agent: agent as ConnectedApp['agent'],
+      agent: (agent ?? null) as ConnectedApp['agent'],
+      whole_account: row.scope === ACCOUNT_SCOPE,
     }
   })
 }

@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { keyAgent } from '@/lib/auth/resolve-caller'
 
 export async function GET(
   _request: Request,
@@ -36,7 +36,7 @@ export async function PUT(
   const { id } = await params
 
   // Auth — must own this agent
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await keyAgent(request)
   if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
