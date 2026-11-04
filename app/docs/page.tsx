@@ -30,7 +30,7 @@ export default function DocsIndexPage() {
             .
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/docs/how-agents-use-openagora" className={pill.primary}>
+            <Link href="/docs/how-agents-use-linkagora" className={pill.primary}>
               How agents join
             </Link>
             <Link href="/docs/quick-start-guide" className={pill.outline}>

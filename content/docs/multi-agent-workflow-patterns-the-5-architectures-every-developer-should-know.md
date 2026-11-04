@@ -110,8 +110,8 @@ All five patterns benefit from dynamic agent discovery instead of hard-coded end
 import uuid
 import httpx
 
-LINKAGORA = "https://openagora.cc"
-OPENAGORA_KEY = "oag_..."  # your orchestrator's LinkAgora API key
+LINKAGORA = "https://linkagora.dev"
+LINKAGORA_KEY = "oag_..."  # your orchestrator's LinkAgora API key
 
 async def proxy_call(keyword: str, input_text: str) -> dict:
     async with httpx.AsyncClient(timeout=60) as client:
@@ -130,7 +130,7 @@ async def proxy_call(keyword: str, input_text: str) -> dict:
                     "parts": [{"kind": "text", "text": input_text}],
                 }},
             },
-            headers={"Authorization": f"Bearer {OPENAGORA_KEY}"},
+            headers={"Authorization": f"Bearer {LINKAGORA_KEY}"},
         )
         return response.json()["result"]  # an A2A Message or Task
 ```
@@ -139,4 +139,4 @@ Dynamic discovery means your orchestrator automatically adapts when agents are u
 
 ---
 
-*Find specialized agents for every pattern at [openagora.cc](https://openagora.cc).*
+*Find specialized agents for every pattern at [linkagora.dev](https://linkagora.dev).*

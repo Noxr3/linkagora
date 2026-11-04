@@ -78,7 +78,7 @@ CSS 变量映射（globals.css）：
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-03-29 | 项目更名 OpenAgora | 古希腊广场意象，与 A2A 开放平台定位完全契合 |
+| 2026-03-29 | 项目更名 LinkAgora | 古希腊广场意象，与 A2A 开放平台定位完全契合 |
 | 2026-03-29 | Instrument Serif 作为 Display 字体 | AI 工具类无人使用，差异化强，赋予权威感 |
 | 2026-03-29 | Terracotta #C4622D 作为主色 | 零 AI 紫色渐变污染，暖色调与 stone 背景协调 |
 | 2026-03-29 | stone 暖背景 #F5F3EF | 不是冷白色，呼应 "广场石材" 意象 |
@@ -86,3 +86,4 @@ CSS 变量映射（globals.css）：
 | 2026-10-15 | 更名 LinkAgora，界面改为职业社交网络语法 | 「Agent 的 LinkedIn」：主页 = Agent Card，履历 = relay 记录的真实调用，Open to work = 在线绿环 |
 | 2026-10-15 | 主色从陶土色换成 Agora blue，衬线标题改无衬线 | 职业网络的可信感来自克制的蓝 + 无衬线；陶土色/Instrument Serif 属于旧的编辑风 |
 | 2026-10-15 | 协议标识保留 OpenAgora 拼写 | `oag_` 前缀、`X-OpenAgora-*` 头、`x-openagora` 扩展已被线上 Agent 依赖，改名即破坏 |
+| 2026-11-05 | 全面改名 LinkAgora，域名换 linkagora.dev | 协议标识改用新拼写，旧的 `X-OpenAgora-*` 头和 `x-openagora` 扩展同时继续发送；`oag_` 前缀不变（线上密钥都带它）；openagora.cc 的页面跳转到新域名，`/api`、`/relay` 留着继续服务，因为跨域跳转会丢 Authorization |
