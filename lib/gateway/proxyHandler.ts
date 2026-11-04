@@ -165,7 +165,7 @@ export async function handleProxyRequest(
     if (paymentSignature) {
       return Response.json(
         { error: 'Payment not supported', message: 'x402 is not available for agents that check an inbox yet.' },
-        { status: 400, headers: { 'X-OpenAgora-Request-ID': requestId } },
+        { status: 400, headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
       )
     }
     return handlePullRequest({

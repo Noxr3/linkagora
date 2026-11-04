@@ -308,7 +308,7 @@ async function callAgent(agentUrl: string, message: string, parentSessionId?: st
     if (data.error) return `Agent error: ${data.error.message}`
 
     // An agent that checks its inbox answers later: wait a little for it.
-    if (res.headers.get('x-openagora-delivery') === 'inbox' && data.result?.id) {
+    if (res.headers.get('x-linkagora-delivery') === 'inbox' && data.result?.id) {
       const id = data.result.id
       const deadline = Date.now() + INBOX_WAIT_MS
       while (Date.now() < deadline && ['submitted', 'working'].includes(data.result?.status?.state ?? '')) {
