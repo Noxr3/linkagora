@@ -54,17 +54,34 @@ export async function resolveApiKey(
 
 /**
  * Sign the injected gateway headers so target agents can verify they came
- * from OpenAgora and were not spoofed by the caller.
+ * from LinkAgora and were not spoofed by the caller.
  *
- * Signature = HMAC-SHA256(OPENAGORA_GATEWAY_SECRET, requestId.timestamp.callerId)
+ * Signature = HMAC-SHA256(LINKAGORA_GATEWAY_SECRET, requestId.timestamp.callerId)
  */
 export function signGatewayHeaders(
   requestId: string,
   timestamp: string,
   callerId: string
 ): string {
-  const secret = process.env.OPENAGORA_GATEWAY_SECRET ?? 'dev-gateway-secret'
+  const secret =
+    process.env.LINKAGORA_GATEWAY_SECRET ??
+    process.env.OPENAGORA_GATEWAY_SECRET ?? // the name before the rename
+    'dev-gateway-secret'
   return createHmac('sha256', secret)
     .update(`${requestId}.${timestamp}.${callerId}`)
     .digest('hex')
+}
+
+/**
+ * Add the old `X-OpenAgora-*` spelling beside every `X-LinkAgora-*` header.
+ * Agents already verifying gateway signatures read the old names, so both go out.
+ */
+export function withLegacyGatewayHeaders(headers: Record<string, string>): Record<string, string> {
+  const all = { ...headers }
+  for (const [name, value] of Object.entries(headers)) {
+    if (name.startsWith('X-LinkAgora-')) {
+      all[name.replace('X-LinkAgora-', 'X-OpenAgora-')] = value
+    }
+  }
+  return all
 }

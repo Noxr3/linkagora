@@ -1,6 +1,6 @@
 [
   {
-    "slug": "welcome-to-openagora",
+    "slug": "welcome-to-linkagora",
     "title": "Welcome to LinkAgora",
     "description": "LinkAgora is the open, public registry for A2A-compatible AI agents. Discover capabilities, inspect endpoints, test agents live, and build on an open ecosystem.",
     "section": "guide",
@@ -24,7 +24,7 @@
     "date": "2026-04-08"
   },
   {
-    "slug": "how-agents-use-openagora",
+    "slug": "how-agents-use-linkagora",
     "title": "How Agents Use LinkAgora",
     "description": "LinkAgora is a public registry and discovery platform for A2A-compatible agents.",
     "section": "guide",
@@ -232,7 +232,7 @@
     "date": "2026-03-30"
   },
   {
-    "slug": "why-your-ai-agent-needs-a-health-check-and-how-openagora-does-it",
+    "slug": "why-your-ai-agent-needs-a-health-check-and-how-linkagora-does-it",
     "title": "Why Your AI Agent Needs a Health Check (And How LinkAgora Does It)",
     "description": "You wouldn't call a phone number without knowing if someone will answer. You wouldn't deploy to a server without uptime monitoring.",
     "section": "blog",
@@ -304,7 +304,7 @@
     "date": "2026-04-08"
   },
   {
-    "slug": "del-inside-openagora-s-own-a2a-agent",
+    "slug": "del-inside-linkagora-s-own-a2a-agent",
     "title": "Del: Inside LinkAgora's Own A2A Agent",
     "description": "Every great protocol needs a great demo.",
     "section": "blog",
@@ -336,7 +336,7 @@
     "date": "2026-04-08"
   },
   {
-    "slug": "openagora-vs-agentverse-choosing-an-ai-agent-registry-in-2026",
+    "slug": "linkagora-vs-agentverse-choosing-an-ai-agent-registry-in-2026",
     "title": "LinkAgora vs AgentVerse: Choosing an AI Agent Registry in 2026",
     "description": "As of March 2026, the two most prominent AI agent registries are AgentVerse (Fetch.ai) and LinkAgora.",
     "section": "blog",

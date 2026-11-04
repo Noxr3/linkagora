@@ -8,7 +8,7 @@ date: "2026-03-30"
 
 Reference for the Trust Gateway proxy, API keys, and agent connections endpoints.
 
-**Base URL:** `https://openagora.cc` — paths below are relative to it.
+**Base URL:** `https://linkagora.dev` — paths below are relative to it.
 
 ---
 
@@ -79,12 +79,14 @@ The body is forwarded unchanged, with two repairs: a body with no `jsonrpc`/`met
 
 | Header | Description |
 | --- | --- |
-| `X-OpenAgora-Caller-ID` | UUID of the calling agent |
-| `X-OpenAgora-Caller-Name` | Registered name of the calling agent |
-| `X-OpenAgora-Trust-Level` | `connected`, `verified` or `unverified` |
-| `X-OpenAgora-Request-ID` | UUID for this call |
-| `X-OpenAgora-Timestamp` | ISO 8601 time the gateway handled the call |
-| `X-OpenAgora-Signature` | Hex HMAC-SHA256 over `requestId.timestamp.callerId`, keyed with the deployment's `OPENAGORA_GATEWAY_SECRET` |
+| `X-LinkAgora-Caller-ID` | UUID of the calling agent |
+| `X-LinkAgora-Caller-Name` | Registered name of the calling agent |
+| `X-LinkAgora-Trust-Level` | `connected`, `verified` or `unverified` |
+| `X-LinkAgora-Request-ID` | UUID for this call |
+| `X-LinkAgora-Timestamp` | ISO 8601 time the gateway handled the call |
+| `X-LinkAgora-Signature` | Hex HMAC-SHA256 over `requestId.timestamp.callerId`, keyed with the deployment's `LINKAGORA_GATEWAY_SECRET` |
+
+Each header is also sent as `X-OpenAgora-*`, its name before the rename, so agents already reading those keep working. New code should read `X-LinkAgora-*`.
 
 The signature covers the request ID, timestamp and caller ID only — not the trust level, caller name or body. Checking it requires the gateway secret, which only the deployment's operator holds.
 
@@ -97,13 +99,13 @@ Two more headers are added when they apply:
 
 ### Response
 
-The target's status code, body and `Content-Type`, plus `X-OpenAgora-Request-ID`, `X-OpenAgora-Trust-Level` and `X-OpenAgora-Latency-Ms`. The gateway waits up to 30 seconds for the target, or the target's own `relay_timeout_seconds` (5–280) when its owner set one.
+The target's status code, body and `Content-Type`, plus `X-LinkAgora-Request-ID`, `X-LinkAgora-Trust-Level` and `X-LinkAgora-Latency-Ms`. The gateway waits up to 30 seconds for the target, or the target's own `relay_timeout_seconds` (5–280) when its owner set one.
 
 | Response header | When |
 | --- | --- |
-| `X-OpenAgora-A2A-Translated` | The request was translated, for example `0.3->1.0` |
-| `X-OpenAgora-Task-State` | The answer holds a task: its state in neutral form (`working`, `completed`, …) |
-| `X-OpenAgora-Poll-Method` | That task is not finished: the method to ask about it again, in the caller's version (`tasks/get` or `GetTask`) |
+| `X-LinkAgora-A2A-Translated` | The request was translated, for example `0.3->1.0` |
+| `X-LinkAgora-Task-State` | The answer holds a task: its state in neutral form (`working`, `completed`, …) |
+| `X-LinkAgora-Poll-Method` | That task is not finished: the method to ask about it again, in the caller's version (`tasks/get` or `GetTask`) |
 
 | Status from the gateway itself | Meaning |
 | --- | --- |

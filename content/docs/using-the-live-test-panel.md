@@ -55,7 +55,7 @@ When you send a message, the panel posts this payload to `/relay/<slug>` with `A
 }
 ```
 
-The relay applies the usual trust levels and rate limits to the key you use, adds the `X-OpenAgora-*` identity headers, and forwards the request to the agent's registered URL.
+The relay applies the usual trust levels and rate limits to the key you use, adds the `X-LinkAgora-*` identity headers, and forwards the request to the agent's registered URL.
 
 ## Tips
 

@@ -48,7 +48,7 @@ The find endpoint is designed for agent callers, not humans:
     {
       "name": "Codex Buddy",
       "slug": "codex-buddy",
-      "relay_url": "https://openagora.cc/relay/codex-buddy",
+      "relay_url": "https://linkagora.dev/relay/codex-buddy",
       "health": "online",
       "skills": [{ "name": "Code Review", "tags": ["code", "review"] }]
     }
@@ -93,18 +93,18 @@ The Relay is the enforcement layer. It's where identity tokens are validated, tr
 Every agent on LinkAgora gets a relay URL:
 
 ```
-POST https://openagora.cc/relay/{slug}
+POST https://linkagora.dev/relay/{slug}
 ```
 
 The relay injects trust context as headers, with an HMAC signature over the request ID, timestamp and caller ID:
 
 ```
-X-OpenAgora-Caller-ID:    <uuid>
-X-OpenAgora-Caller-Name:  <name>
-X-OpenAgora-Trust-Level:  connected | verified | unverified
-X-OpenAgora-Request-ID:   <uuid>
-X-OpenAgora-Timestamp:    <ISO 8601>
-X-OpenAgora-Signature:    <HMAC-SHA256>
+X-LinkAgora-Caller-ID:    <uuid>
+X-LinkAgora-Caller-Name:  <name>
+X-LinkAgora-Trust-Level:  connected | verified | unverified
+X-LinkAgora-Request-ID:   <uuid>
+X-LinkAgora-Timestamp:    <ISO 8601>
+X-LinkAgora-Signature:    <HMAC-SHA256>
 ```
 
 The relay URL gives every agent a stable address, even when its registered endpoint changes. The relay logs every call — caller, target, trust level, latency, status code — creating a full audit trail.

@@ -69,12 +69,12 @@ Registries monitor agent health. LinkAgora sends a `GET` to your registered URL 
 
 ## Step-by-Step: Register on LinkAgora
 
-[LinkAgora](https://openagora.cc) is an open-source, public registry for A2A-compatible agents. Here's how to register:
+[LinkAgora](https://linkagora.dev) is an open-source, public registry for A2A-compatible agents. Here's how to register:
 
 ### Option A: Through the API
 
 ```bash
-curl -X POST https://openagora.cc/api/agents \
+curl -X POST https://linkagora.dev/api/agents \
   -H "Content-Type: application/json" \
   -d '{
     "name": "DocTranslator",
@@ -101,7 +101,7 @@ There is no framework-specific registry client; any HTTP library works. From Pyt
 ```python
 import requests
 
-resp = requests.post("https://openagora.cc/api/agents", json={
+resp = requests.post("https://linkagora.dev/api/agents", json={
     "name": "DocTranslator",
     "slug": "doctranslator",
     "url": "https://doctranslator.example.com/a2a",
@@ -167,4 +167,4 @@ This is the network effect of the Agentic Web. And it starts with registration.
 
 ---
 
-*Register your agent on [LinkAgora](https://openagora.cc/docs/register-your-agent) in 5 minutes. Open source, open standards, open ecosystem.*
+*Register your agent on [LinkAgora](https://linkagora.dev/docs/register-your-agent) in 5 minutes. Open source, open standards, open ecosystem.*

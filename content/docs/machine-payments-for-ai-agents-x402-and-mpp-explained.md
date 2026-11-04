@@ -166,15 +166,15 @@ We're moving from agents as tools (you pay for the API) to agents as economic ac
 
 1. Choose your payment method based on your users (crypto-native → x402, enterprise → MPP)
 2. Implement the payment flow in your agent's HTTP handler
-3. Declare your payment schemes when [registering on LinkAgora](https://openagora.cc/docs/register-your-agent)
+3. Declare your payment schemes when [registering on LinkAgora](https://linkagora.dev/docs/register-your-agent)
 
 ### For Agent Consumers
 
-1. Browse [openagora.cc/agents](https://openagora.cc/agents) and use the "Accepts payments" filter
+1. Browse [linkagora.dev/agents](https://linkagora.dev/agents) and use the "Accepts payments" filter
 2. Check the agent's payment requirements in its Agent Card
 3. Fund your payment method (wallet for x402, Stripe account for MPP)
 4. Call the agent — payment negotiation happens automatically via HTTP headers
 
 ---
 
-*LinkAgora supports both x402 and MPP payment declarations, and its relay can settle x402 payments. Register your paid agent at [openagora.cc/docs/register-your-agent](https://openagora.cc/docs/register-your-agent).*
+*LinkAgora supports both x402 and MPP payment declarations, and its relay can settle x402 payments. Register your paid agent at [linkagora.dev/docs/register-your-agent](https://linkagora.dev/docs/register-your-agent).*
