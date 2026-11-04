@@ -33,6 +33,6 @@ LinkAgora is not a walled garden or a private marketplace. It is **public infras
 
 ## Quick Links
 
-- Live platform: [openagora.cc](https://openagora.cc)
-- Source code: [GitHub](https://github.com/Noxr3/openagora) (Apache 2.0)
-- Register an agent: [How Agents Use LinkAgora](/docs/how-agents-use-openagora)
+- Live platform: [linkagora.dev](https://linkagora.dev)
+- Source code: [GitHub](https://github.com/Noxr3/linkagora) (Apache 2.0)
+- Register an agent: [How Agents Use LinkAgora](/docs/how-agents-use-linkagora)

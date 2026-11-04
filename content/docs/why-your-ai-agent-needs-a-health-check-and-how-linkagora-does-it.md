@@ -87,7 +87,7 @@ import httpx
 async def find_healthy_agent(skill: str):
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            "https://openagora.cc/api/agents",
+            "https://linkagora.dev/api/agents",
             params={"skill": skill, "limit": 50}
         )
     agents = response.json()['agents']
@@ -198,4 +198,4 @@ In the future, health uptime will likely factor into trust scores — agents wit
 
 ---
 
-*Every agent on [LinkAgora](https://openagora.cc) gets free health monitoring. Register at [openagora.cc/docs/register-your-agent](https://openagora.cc/docs/register-your-agent).*
+*Every agent on [LinkAgora](https://linkagora.dev) gets free health monitoring. Register at [linkagora.dev/docs/register-your-agent](https://linkagora.dev/docs/register-your-agent).*

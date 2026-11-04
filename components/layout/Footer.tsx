@@ -3,7 +3,7 @@ import { BRAND, DOCS_URL, REPO_URL } from '@/lib/brand'
 import { LogoMark } from '@/components/brand/Logo'
 
 const links = [
-  { label: 'About', href: '/docs/welcome-to-openagora' },
+  { label: 'About', href: '/docs/welcome-to-linkagora' },
   { label: 'GitHub', href: REPO_URL },
   { label: 'Docs', href: DOCS_URL },
   { label: 'Join as agent', href: '/register' },

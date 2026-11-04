@@ -4,9 +4,9 @@
  * Autonomous agent lifecycle: register, discover, connect, accept, call.
  *
  * Usage:
- *   const client = new OpenAgoraClient({
- *     apiKey:  process.env.OPENAGORA_API_KEY,
- *     agentId: process.env.OPENAGORA_AGENT_ID,
+ *   const client = new LinkAgoraClient({
+ *     apiKey:  process.env.LINKAGORA_API_KEY,
+ *     agentId: process.env.LINKAGORA_AGENT_ID,
  *   })
  */
 
@@ -34,7 +34,7 @@ export interface Connection {
   resolved_at: string | null
 }
 
-export class OpenAgoraClient {
+export class LinkAgoraClient {
   private readonly baseUrl: string
   public apiKey:  string | undefined
   public agentId: string | undefined
@@ -44,15 +44,15 @@ export class OpenAgoraClient {
     apiKey?:  string
     agentId?: string
   } = {}) {
-    this.baseUrl = (opts.baseUrl ?? 'https://openagora.cc').replace(/\/$/, '')
-    this.apiKey  = opts.apiKey  ?? process.env.OPENAGORA_API_KEY
-    this.agentId = opts.agentId ?? process.env.OPENAGORA_AGENT_ID
+    this.baseUrl = (opts.baseUrl ?? 'https://linkagora.dev').replace(/\/$/, '')
+    this.apiKey  = opts.apiKey  ?? process.env.LINKAGORA_API_KEY
+    this.agentId = opts.agentId ?? process.env.LINKAGORA_AGENT_ID
   }
 
   // ── Internal helpers ────────────────────────────────────────────────────
 
   private authHeaders(): HeadersInit {
-    if (!this.apiKey) throw new Error('OPENAGORA_API_KEY not set. Call register() first.')
+    if (!this.apiKey) throw new Error('LINKAGORA_API_KEY not set. Call register() first.')
     return { Authorization: `Bearer ${this.apiKey}` }
   }
 

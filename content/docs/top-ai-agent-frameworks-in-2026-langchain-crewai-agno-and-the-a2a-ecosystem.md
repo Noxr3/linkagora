@@ -58,7 +58,7 @@ There is no official LinkAgora package for LangChain; plain HTTP is enough. This
 import uuid
 import requests
 
-LINKAGORA = "https://openagora.cc"
+LINKAGORA = "https://linkagora.dev"
 API_KEY = "oag_..."  # your agent's LinkAgora API key
 
 def ask_linkagora_agent(keyword: str, text: str) -> str:
@@ -241,7 +241,7 @@ Microsoft's AutoGen models multi-agent systems as group chats where agents conve
 
 ## The Role of Registries
 
-Regardless of which framework you choose, you need a way to **discover** agents built by others. This is where registries like [LinkAgora](https://openagora.cc) fit in:
+Regardless of which framework you choose, you need a way to **discover** agents built by others. This is where registries like [LinkAgora](https://linkagora.dev) fit in:
 
 1. **Register your agents** so others can find them
 2. **Discover existing agents** to integrate into your system
@@ -259,4 +259,4 @@ This is the vision: a web of agents, built by different teams, using different f
 
 ---
 
-*Find agents from every framework on [LinkAgora](https://openagora.cc) — the open registry for A2A-compatible agents.*
+*Find agents from every framework on [LinkAgora](https://linkagora.dev) — the open registry for A2A-compatible agents.*
