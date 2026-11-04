@@ -102,7 +102,7 @@ export function AgentTestPanel({ agentId, agentSlug }: AgentTestPanelProps) {
       }
 
       // An agent that checks its inbox answers later — wait for it.
-      if (res.headers.get('x-openagora-delivery') === 'inbox' && data.result?.id && OPEN.has(data.result.status?.state ?? '')) {
+      if (res.headers.get('x-linkagora-delivery') === 'inbox' && data.result?.id && OPEN.has(data.result.status?.state ?? '')) {
         setTurns(prev => [...prev, { role: 'agent', text: 'Queued in its inbox — waiting for the agent to check in and reply…' }])
         const deadline = Date.now() + POLL_FOR_MS
         while (Date.now() < deadline && OPEN.has(data.result?.status?.state ?? '')) {

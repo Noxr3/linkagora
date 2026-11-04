@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { withLegacyGatewayHeaders } from '@/lib/gateway/auth'
 import type { TrustLevel } from '@/lib/gateway/ratelimit'
 import {
   generationOf,
@@ -26,7 +27,7 @@ interface PullRequest {
 function json(payload: unknown, requestId: string, status = 200) {
   return Response.json(payload, {
     status,
-    headers: { 'X-OpenAgora-Request-ID': requestId, 'X-OpenAgora-Delivery': 'inbox' },
+    headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId, 'X-LinkAgora-Delivery': 'inbox' }),
   })
 }
 
