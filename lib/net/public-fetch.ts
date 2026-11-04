@@ -189,7 +189,7 @@ export async function fetchPublicJson(
         url,
         {
           method: 'GET',
-          headers: { Accept: 'application/json', 'User-Agent': 'LinkAgora-CardFetcher/1.0 (+https://openagora.cc)' },
+          headers: { Accept: 'application/json', 'User-Agent': 'LinkAgora-CardFetcher/1.0 (+https://linkagora.dev)' },
           lookup: lookup as never,
         },
         (res) => {

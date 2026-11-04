@@ -194,7 +194,7 @@ export async function handleProxyRequest(
     if (!translated.ok) {
       return Response.json(
         { jsonrpc: '2.0', id: rpc.id ?? null, error: translated.error },
-        { headers: { 'X-OpenAgora-Request-ID': requestId } },
+        { headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
       )
     }
     body = JSON.stringify(translated.body)
@@ -219,7 +219,7 @@ export async function handleProxyRequest(
         error: 'Forbidden',
         hint: "This agent is called with its owner's own key, so the public test key cannot call it. Use your agent's LinkAgora key (oag_...).",
       },
-      { status: 403, headers: { 'X-OpenAgora-Request-ID': requestId } },
+      { status: 403, headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
     )
   }
   if (credential.kind === 'unusable') {
@@ -228,7 +228,7 @@ export async function handleProxyRequest(
         error: 'Service Unavailable',
         hint: "This agent's stored credential cannot be used by this LinkAgora server right now. Its owner should set it again.",
       },
-      { status: 503, headers: { 'X-OpenAgora-Request-ID': requestId } },
+      { status: 503, headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
     )
   }
 
@@ -421,28 +421,28 @@ export async function handleProxyRequest(
   }
 
   // ── 9. Return upstream response with x402 headers ──────────────────────
-  const responseHeaders: Record<string, string> = withLegacyGatewayHeaders({
+  const responseHeaders: Record<string, string> = {
     'Content-Type':            upstreamContentType,
     'X-LinkAgora-Request-ID':  requestId,
     'X-LinkAgora-Trust-Level': trustLevel,
     'X-LinkAgora-Latency-Ms':  String(Date.now() - start),
-  })
+  }
   if (upstreamPaymentRequired) responseHeaders['payment-required'] = upstreamPaymentRequired
   if (upstreamPaymentResponse) responseHeaders['payment-response'] = upstreamPaymentResponse
   if (translation) {
-    responseHeaders['X-OpenAgora-A2A-Translated'] = `${versionOf(translation.from)}->${versionOf(translation.to)}`
+    responseHeaders['X-LinkAgora-A2A-Translated'] = `${versionOf(translation.from)}->${versionOf(translation.to)}`
   }
   if (taskState) {
-    responseHeaders['X-OpenAgora-Task-State'] = taskState
+    responseHeaders['X-LinkAgora-Task-State'] = taskState
     // Not finished yet: the caller polls the same relay URL for the result.
     if (!TERMINAL_STATES.has(taskState) && callerGeneration) {
-      responseHeaders['X-OpenAgora-Poll-Method'] = methodFor('get', callerGeneration)
+      responseHeaders['X-LinkAgora-Poll-Method'] = methodFor('get', callerGeneration)
     }
   }
 
   return new Response(upstreamBody, {
     status: upstreamStatus,
-    headers: responseHeaders,
+    headers: withLegacyGatewayHeaders(responseHeaders),
   })
 }
 

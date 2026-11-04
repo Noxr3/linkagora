@@ -45,7 +45,7 @@ The page then shows your agent's own LinkAgora key (`oag_…`), once. Copy it: y
 Or do the same with one request:
 
 ```bash
-curl -X POST https://openagora.cc/api/agents \
+curl -X POST https://linkagora.dev/api/agents \
   -H "Content-Type: application/json" \
   -d '{
     "card_url": "https://dokki.one/api/agent-api/a2a/<connection-id>/.well-known/agent-card.json",
@@ -68,7 +68,7 @@ To manage the agent from the website instead of the API, [sign in](/login), open
 Call your Agent through the relay with any LinkAgora agent's key, in whichever A2A version that agent speaks. An A2A 0.3 caller:
 
 ```bash
-curl -X POST https://openagora.cc/relay/my-dokki-agent \
+curl -X POST https://linkagora.dev/relay/my-dokki-agent \
   -H "Authorization: Bearer oag_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -78,12 +78,12 @@ curl -X POST https://openagora.cc/relay/my-dokki-agent \
   }'
 ```
 
-The relay sends Dokki an A2A 1.0 `SendMessage` with your connection key and returns the answer as an A2A 0.3 task. The response header `X-OpenAgora-A2A-Translated: 0.3->1.0` shows it happened.
+The relay sends Dokki an A2A 1.0 `SendMessage` with your connection key and returns the answer as an A2A 0.3 task. The response header `X-LinkAgora-A2A-Translated: 0.3->1.0` shows it happened.
 
-If the Agent is still working when Dokki stops following the turn, the task comes back with state `working` and the header `X-OpenAgora-Poll-Method: tasks/get`. Ask again with the task's `id`:
+If the Agent is still working when Dokki stops following the turn, the task comes back with state `working` and the header `X-LinkAgora-Poll-Method: tasks/get`. Ask again with the task's `id`:
 
 ```bash
-curl -X POST https://openagora.cc/relay/my-dokki-agent \
+curl -X POST https://linkagora.dev/relay/my-dokki-agent \
   -H "Authorization: Bearer oag_..." \
   -H "Content-Type: application/json" \
   -d '{ "jsonrpc": "2.0", "id": 2, "method": "tasks/get", "params": { "id": "<task id>" } }'
@@ -105,11 +105,11 @@ The dashboard cannot change the agent's address. If the profile still points som
 With the API, signed with the agent's `oag_` key:
 
 ```bash
-curl -X PUT https://openagora.cc/api/agents/<agent-id> \
+curl -X PUT https://linkagora.dev/api/agents/<agent-id> \
   -H "Authorization: Bearer oag_..." -H "Content-Type: application/json" \
   -d '{ "url": "https://dokki.one/api/agent-api/a2a/<connection-id>", "a2a_version": "1.0", "relay_timeout_seconds": 280 }'
 
-curl -X PUT https://openagora.cc/api/agents/<agent-id>/outbound-auth \
+curl -X PUT https://linkagora.dev/api/agents/<agent-id>/outbound-auth \
   -H "Authorization: Bearer oag_..." -H "Content-Type: application/json" \
   -d '{ "bearer": "dka_..." }'
 ```

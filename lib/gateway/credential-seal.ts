@@ -77,7 +77,7 @@ export function checkHeaderName(name: unknown): { ok: true; name: string } | { o
   }
   const trimmed = name.trim()
   const lower = trimmed.toLowerCase()
-  if (RESERVED.has(lower) || lower.startsWith('x-openagora-') || lower.startsWith('proxy-') || lower.startsWith('sec-')) {
+  if (RESERVED.has(lower) || lower.startsWith('x-linkagora-') || lower.startsWith('x-openagora-') || lower.startsWith('proxy-') || lower.startsWith('sec-')) {
     return { ok: false, error: `The relay sets ${trimmed} itself; use the header your agent reads its key from` }
   }
   return { ok: true, name: trimmed }

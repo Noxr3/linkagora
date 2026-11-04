@@ -44,7 +44,7 @@ test('a sealed credential opens only for the same key, agent and header', () => 
 
 test('header names the relay owns cannot be replaced', () => {
   assert.deepEqual(checkHeaderName('X-API-Key'), { ok: true, name: 'X-API-Key' })
-  for (const bad of ['Host', 'content-type', 'X-OpenAgora-Caller-ID', 'A2A-Version', 'Payment-Signature', 'Transfer-Encoding', 'Proxy-Authorization', 'Sec-Fetch-Mode', 'Bad Header', 'a\r\nb', '', 42]) {
+  for (const bad of ['Host', 'content-type', 'X-LinkAgora-Caller-ID', 'X-OpenAgora-Caller-ID', 'A2A-Version', 'Payment-Signature', 'Transfer-Encoding', 'Proxy-Authorization', 'Sec-Fetch-Mode', 'Bad Header', 'a\r\nb', '', 42]) {
     assert.equal(checkHeaderName(bad).ok, false, String(bad))
   }
 })
