@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey, signGatewayHeaders } from '@/lib/gateway/auth'
+import { resolveApiKey, signGatewayHeaders, withLegacyGatewayHeaders } from '@/lib/gateway/auth'
 import { getTrustLevel, checkRateLimit } from '@/lib/gateway/ratelimit'
 import { verifyPayment, settlePayment, encodeSettlementHeader, extractPaymentDetails } from '@/lib/gateway/x402'
 import { usesSharedPublicKey } from '@/lib/gateway/actor'
@@ -158,7 +158,7 @@ export async function handleProxyRequest(
             },
           },
         },
-        { status: 400, headers: { 'X-OpenAgora-Request-ID': requestId } },
+        { status: 400, headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
       )
     }
   } catch {
@@ -241,15 +241,15 @@ export async function handleProxyRequest(
   let upstreamPaymentRequired = ''
   let upstreamPaymentResponse = ''
 
-  const forwardHeaders: Record<string, string> = {
+  const forwardHeaders: Record<string, string> = withLegacyGatewayHeaders({
     'Content-Type': translation ? 'application/json' : request.headers.get('content-type') ?? 'application/json',
-    'X-OpenAgora-Caller-ID':   caller.agentId,
-    'X-OpenAgora-Caller-Name': callerAgent?.name ?? 'unknown',
-    'X-OpenAgora-Trust-Level': trustLevel,
-    'X-OpenAgora-Request-ID':  requestId,
-    'X-OpenAgora-Timestamp':   timestamp,
-    'X-OpenAgora-Signature':   signature,
-  }
+    'X-LinkAgora-Caller-ID':   caller.agentId,
+    'X-LinkAgora-Caller-Name': callerAgent?.name ?? 'unknown',
+    'X-LinkAgora-Trust-Level': trustLevel,
+    'X-LinkAgora-Request-ID':  requestId,
+    'X-LinkAgora-Timestamp':   timestamp,
+    'X-LinkAgora-Signature':   signature,
+  })
   // A2A 1.0 servers read the version from A2A-Version.
   const callerVersion = request.headers.get('a2a-version')?.trim()
   const a2aVersion = translation
@@ -271,7 +271,7 @@ export async function handleProxyRequest(
       if (!verification.isValid) {
         return Response.json(
           { error: 'Payment verification failed', reason: verification.invalidReason },
-          { status: 402, headers: { 'X-OpenAgora-Request-ID': requestId } },
+          { status: 402, headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
         )
       }
 
@@ -280,7 +280,7 @@ export async function handleProxyRequest(
       if (!settlement.success) {
         return Response.json(
           { error: 'Payment settlement failed', reason: settlement.errorReason },
-          { status: 402, headers: { 'X-OpenAgora-Request-ID': requestId } },
+          { status: 402, headers: withLegacyGatewayHeaders({ 'X-LinkAgora-Request-ID': requestId }) },
         )
       }
 
@@ -421,12 +421,12 @@ export async function handleProxyRequest(
   }
 
   // ── 9. Return upstream response with x402 headers ──────────────────────
-  const responseHeaders: Record<string, string> = {
+  const responseHeaders: Record<string, string> = withLegacyGatewayHeaders({
     'Content-Type':            upstreamContentType,
-    'X-OpenAgora-Request-ID':  requestId,
-    'X-OpenAgora-Trust-Level': trustLevel,
-    'X-OpenAgora-Latency-Ms':  String(Date.now() - start),
-  }
+    'X-LinkAgora-Request-ID':  requestId,
+    'X-LinkAgora-Trust-Level': trustLevel,
+    'X-LinkAgora-Latency-Ms':  String(Date.now() - start),
+  })
   if (upstreamPaymentRequired) responseHeaders['payment-required'] = upstreamPaymentRequired
   if (upstreamPaymentResponse) responseHeaders['payment-response'] = upstreamPaymentResponse
   if (translation) {

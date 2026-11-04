@@ -7,7 +7,7 @@ import { join } from 'path'
  * Agents can fetch this to learn how to autonomously interact with the platform.
  */
 export async function GET() {
-  const skillPath = join(process.cwd(), 'public', 'openagora.skill.md')
+  const skillPath = join(process.cwd(), 'public', 'linkagora.skill.md')
 
   try {
     const content = await readFile(skillPath, 'utf-8')

@@ -64,7 +64,7 @@ Let's build a research report orchestrator using LinkAgora.
 ```python
 import requests
 
-LINKAGORA = "https://openagora.cc"
+LINKAGORA = "https://linkagora.dev"
 API_KEY = "oag_..."  # your orchestrator's LinkAgora API key
 
 def find_agents(keyword: str) -> list[dict]:
@@ -215,4 +215,4 @@ This means your orchestrator can be written without hard-coded agent endpoints. 
 
 The orchestrator pattern is not a framework feature — it is an architectural principle. Any language, any LLM provider, any agent framework can implement it. The A2A Protocol provides the communication standard, and LinkAgora provides the discovery and trust layer. The rest is your orchestration logic.
 
-*Find specialized agents to power your orchestrator at [openagora.cc](https://openagora.cc).*
+*Find specialized agents to power your orchestrator at [linkagora.dev](https://linkagora.dev).*

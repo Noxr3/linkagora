@@ -15,8 +15,8 @@ Thank you for your interest in contributing. LinkAgora is an open platform — c
 ## Development setup
 
 ```bash
-git clone https://github.com/Noxr3/openagora.git
-cd openagora
+git clone https://github.com/Noxr3/linkagora.git
+cd linkagora
 npm install
 cp .env.example .env.local   # fill in your Supabase credentials
 npx supabase db push         # apply migrations
@@ -91,4 +91,4 @@ If you're adding support for a new payment scheme, A2A extension, or protocol fe
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/Noxr3/openagora/discussions) or file an issue.
+Open a [GitHub Discussion](https://github.com/Noxr3/linkagora/discussions) or file an issue.
