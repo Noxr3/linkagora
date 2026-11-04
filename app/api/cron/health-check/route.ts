@@ -13,6 +13,14 @@ const CONCURRENCY = 20
 // Agent ids per UPDATE, so the ids stay well inside a request URL's limit.
 const UPDATE_CHUNK = 100
 
+// An inbox agent is online while it keeps checking in.
+const INBOX_ONLINE_MS = 15 * 60_000
+
+function inboxStatus(lastSeenAt: string | null): HealthStatus {
+  if (!lastSeenAt) return 'unknown'
+  return Date.now() - Date.parse(lastSeenAt) < INBOX_ONLINE_MS ? 'online' : 'offline'
+}
+
 async function probeAgent(url: string): Promise<HealthStatus> {
   try {
     const res = await fetch(url, {
@@ -54,7 +62,7 @@ export async function GET(request: Request) {
 
   const { data: agents, error } = await supabaseAdmin
     .from('agents')
-    .select('id, url')
+    .select('id, url, delivery, last_seen_at')
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 })
@@ -68,8 +76,21 @@ export async function GET(request: Request) {
 
   const results = await runInBatches(agents, CONCURRENCY, async (agent) => ({
     id: agent.id as string,
-    status: await probeAgent(agent.url),
+    status:
+      agent.delivery === 'pull' || !agent.url ? inboxStatus(agent.last_seen_at) : await probeAgent(agent.url),
   }))
+
+  // Inbox tasks nobody answered in time fail, and so does their call record.
+  const { data: expired } = await supabaseAdmin
+    .from('agent_tasks')
+    .update({ state: 'failed', completed_at: checkedAt, updated_at: checkedAt, claimed_until: null })
+    .in('state', ['submitted', 'working', 'input-required'])
+    .lt('expires_at', checkedAt)
+    .select('proxy_call_id')
+  const expiredCalls = (expired ?? []).map((t) => t.proxy_call_id).filter((v): v is string => !!v)
+  if (expiredCalls.length > 0) {
+    await supabaseAdmin.from('proxy_calls').update({ status_code: 504 }).in('id', expiredCalls)
+  }
 
   const summary: Record<HealthStatus, number> = { online: 0, offline: 0, unknown: 0 }
   const idsByStatus = new Map<HealthStatus, string[]>()
@@ -92,7 +113,7 @@ export async function GET(request: Request) {
   }
 
   return Response.json(
-    { checked: results.length, checkedAt, summary, writeErrors },
+    { checked: results.length, expired_tasks: expiredCalls.length, checkedAt, summary, writeErrors },
     { status: writeErrors ? 500 : 200 },
   )
 }
