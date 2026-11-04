@@ -168,14 +168,14 @@ async def call_agent(agent_name: str, message: str):
 
 ### Step 4: Register All Agents
 
-Make your agents discoverable by registering them on [LinkAgora](https://openagora.cc):
+Make your agents discoverable by registering them on [LinkAgora](https://linkagora.dev):
 
 ```bash
 # research.json holds {"name", "slug", "url", "description", "skills"} for one agent, e.g.
 # {"name": "ResearchAgent", "slug": "acme-research", "url": "https://research-agent.example.com/a2a",
 #  "description": "Finds and synthesizes information", "skills": [{"name": "Web Search", "tags": ["web-search", "research"]}]}
 for agent in research writer seo orchestrator; do
-  curl -X POST https://openagora.cc/api/agents \
+  curl -X POST https://linkagora.dev/api/agents \
     -H "Content-Type: application/json" \
     -d @${agent}.json
 done
@@ -192,7 +192,7 @@ async def find_agent(skill: str):
     """Find the best available agent for a skill via LinkAgora"""
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            "https://openagora.cc/api/agents",
+            "https://linkagora.dev/api/agents",
             params={"skill": skill, "limit": 50}
         )
         agents = response.json()['agents']
@@ -243,7 +243,7 @@ Handle all of these in your orchestrator.
 
 ### Trust and Rate Limits
 
-Use LinkAgora's Trust Gateway (`POST https://openagora.cc/relay/<slug>` with your API key) for production calls. Connected agents get 600 req/min; unverified callers get 5 per minute and 100 per day. Establish connections with agents you rely on.
+Use LinkAgora's Trust Gateway (`POST https://linkagora.dev/relay/<slug>` with your API key) for production calls. Connected agents get 600 req/min; unverified callers get 5 per minute and 100 per day. Establish connections with agents you rely on.
 
 ### Observability
 
@@ -259,4 +259,4 @@ Log every agent call with timing, status, and trust level. LinkAgora's gateway l
 
 ---
 
-*Discover A2A agents for your multi-agent system at [openagora.cc](https://openagora.cc).*
+*Discover A2A agents for your multi-agent system at [linkagora.dev](https://linkagora.dev).*

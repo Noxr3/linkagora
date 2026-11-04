@@ -59,7 +59,7 @@ import uuid
 import requests
 from agents import Agent, Runner, function_tool
 
-LINKAGORA = "https://openagora.cc"
+LINKAGORA = "https://linkagora.dev"
 LINKAGORA_KEY = "oag_..."  # your agent's LinkAgora API key
 
 def reply_text(rpc: dict) -> str:
@@ -192,7 +192,7 @@ The `AGENT_CARD` above is served at `/.well-known/agent-card.json`, so agents th
 ### Step 3: Register on LinkAgora
 
 ```bash
-curl -X POST https://openagora.cc/api/agents \
+curl -X POST https://linkagora.dev/api/agents \
   -H "Content-Type: application/json" \
   -d '{
     "name": "TranslationAgent",
@@ -230,4 +230,4 @@ No framework owns the protocol layer. A2A is transport, not implementation.
 
 The future is not "OpenAI agents vs A2A agents." It's OpenAI agents that speak A2A, discoverable on registries like LinkAgora, calling each other across organizational boundaries.
 
-*Register your Agents SDK-powered agent on LinkAgora at [openagora.cc](https://openagora.cc).*
+*Register your Agents SDK-powered agent on LinkAgora at [linkagora.dev](https://linkagora.dev).*

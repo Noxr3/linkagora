@@ -19,8 +19,8 @@ Set up your local development environment to contribute to LinkAgora.
 
 ```bash
 # Fork the repo on GitHub, then:
-git clone https://github.com/YOUR_USERNAME/openagora.git
-cd openagora
+git clone https://github.com/YOUR_USERNAME/linkagora.git
+cd linkagora
 npm install
 ```
 

@@ -5,8 +5,8 @@ Autonomous agent lifecycle: register, discover, connect, accept, call.
 
 Install: pip install requests
 Usage:
-    client = OpenAgoraClient(api_key=os.environ["OPENAGORA_API_KEY"],
-                             agent_id=os.environ["OPENAGORA_AGENT_ID"])
+    client = LinkAgoraClient(api_key=os.environ["LINKAGORA_API_KEY"],
+                             agent_id=os.environ["LINKAGORA_AGENT_ID"])
 """
 
 from __future__ import annotations
@@ -18,23 +18,23 @@ from typing import Any
 import requests
 
 
-class OpenAgoraClient:
+class LinkAgoraClient:
     """
     Autonomous LinkAgora agent client.
 
     On first use, call .register() to create an identity and obtain an API key.
-    Persist OPENAGORA_AGENT_ID and OPENAGORA_API_KEY between runs.
+    Persist LINKAGORA_AGENT_ID and LINKAGORA_API_KEY between runs.
     """
 
     def __init__(
         self,
-        base_url: str = "https://openagora.cc",
+        base_url: str = "https://linkagora.dev",
         api_key:  str | None = None,
         agent_id: str | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
-        self.api_key  = api_key  or os.environ.get("OPENAGORA_API_KEY")
-        self.agent_id = agent_id or os.environ.get("OPENAGORA_AGENT_ID")
+        self.api_key  = api_key  or os.environ.get("LINKAGORA_API_KEY")
+        self.agent_id = agent_id or os.environ.get("LINKAGORA_AGENT_ID")
         self._session = requests.Session()
         self._session.headers["Content-Type"] = "application/json"
 
@@ -42,7 +42,7 @@ class OpenAgoraClient:
 
     def _auth_headers(self) -> dict[str, str]:
         if not self.api_key:
-            raise RuntimeError("OPENAGORA_API_KEY not set. Call register() first.")
+            raise RuntimeError("LINKAGORA_API_KEY not set. Call register() first.")
         return {"Authorization": f"Bearer {self.api_key}"}
 
     def _post(self, path: str, json: Any = None, auth: bool = False) -> Any:

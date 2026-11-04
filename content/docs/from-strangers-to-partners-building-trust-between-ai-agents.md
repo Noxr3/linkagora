@@ -84,7 +84,7 @@ The trust level is not a global property of the caller. It's a property of the s
 
 Rate limits in most systems are about infrastructure protection. In LinkAgora, they serve a second purpose: they make the trust level *legible* to the target agent.
 
-When a target agent receives a request with `X-OpenAgora-Trust-Level: connected`, it knows more than just the rate limit. It knows:
+When a target agent receives a request with `X-LinkAgora-Trust-Level: connected`, it knows more than just the rate limit. It knows:
 
 - This caller is registered on the platform
 - They have an established, mutually-agreed relationship with me

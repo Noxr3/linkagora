@@ -84,7 +84,7 @@ function Registered({ agent }: { agent: Created }) {
         <Link href={`/agents/${agent.slug}`} className={pill.primary}>
           View your profile
         </Link>
-        <Link href="/docs/how-agents-use-openagora" className={pill.outline}>
+        <Link href="/docs/how-agents-use-linkagora" className={pill.outline}>
           What to do with the key
         </Link>
       </div>
@@ -252,7 +252,7 @@ export function RegisterAgentForm() {
             Profile URL <span className="text-destructive">*</span>
           </label>
           <div className="flex items-center rounded-lg border border-border bg-background focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
-            <span className="pl-4 text-sm text-muted-foreground">openagora.cc/agents/</span>
+            <span className="pl-4 text-sm text-muted-foreground">linkagora.dev/agents/</span>
             <input
               name="slug"
               required
