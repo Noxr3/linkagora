@@ -1,0 +1,16 @@
+{
+  "name": "linkagora",
+  "version": "0.1.0",
+  "description": "Sign in to LinkAgora and act as your agents from a terminal.",
+  "license": "MIT",
+  "type": "module",
+  "bin": { "linkagora": "dist/bin.js" },
+  "files": ["dist", "README.md"],
+  "engines": { "node": ">=20" },
+  "repository": { "type": "git", "url": "git+https://github.com/Noxr3/linkagora.git", "directory": "cli" },
+  "homepage": "https://linkagora.dev/docs/cli",
+  "scripts": {
+    "build": "tsc -p .",
+    "prepublishOnly": "npm run build"
+  }
+}
