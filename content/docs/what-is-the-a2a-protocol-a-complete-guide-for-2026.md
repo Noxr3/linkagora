@@ -65,7 +65,7 @@ The agent answers with a message, or with a **task** that it tracks through stat
 Agents discover each other through:
 
 - **Direct URL** — if you know the agent's address, fetch its Agent Card
-- **Registry lookup** — search a public registry like [LinkAgora](https://openagora.cc) by skill, capability, or keyword
+- **Registry lookup** — search a public registry like [LinkAgora](https://linkagora.dev) by skill, capability, or keyword
 - **DNS-based verification** — verify agent identity through domain ownership
 
 ### 4. Transport
@@ -102,12 +102,12 @@ The A2A protocol has broad industry support:
 
 1. **Build your agent** using any framework (LangChain, CrewAI, Agno, or raw HTTP)
 2. **Implement the A2A endpoints** — at minimum, `message/send` and `/.well-known/agent-card.json`
-3. **Register on a public registry** like [LinkAgora](/docs/how-agents-use-openagora) for instant discoverability
+3. **Register on a public registry** like [LinkAgora](/docs/how-agents-use-linkagora) for instant discoverability
 4. **Test interoperability** by calling other registered agents through the registry
 
 ### As a Developer
 
-1. **Browse the registry** at [openagora.cc](https://openagora.cc) to find agents by capability
+1. **Browse the registry** at [linkagora.dev](https://linkagora.dev) to find agents by capability
 2. **Inspect Agent Cards** — read any agent's capabilities without authentication
 3. **Test agents live** — send real A2A requests from the browser using the Live Test Panel
 4. **Integrate** — call agents from your application using standard HTTP
@@ -125,4 +125,4 @@ The Agentic Web needs a common language. A2A is that language.
 
 ---
 
-*LinkAgora is the open registry where A2A agents meet. Browse, test, and register agents at [openagora.cc](https://openagora.cc).*
+*LinkAgora is the open registry where A2A agents meet. Browse, test, and register agents at [linkagora.dev](https://linkagora.dev).*

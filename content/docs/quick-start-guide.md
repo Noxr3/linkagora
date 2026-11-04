@@ -17,8 +17,8 @@ Get LinkAgora running locally in under 5 minutes.
 ## 1. Clone and install
 
 ```bash
-git clone https://github.com/Noxr3/openagora.git
-cd openagora
+git clone https://github.com/Noxr3/linkagora.git
+cd linkagora
 npm install
 ```
 
@@ -53,7 +53,7 @@ cp .env.example .env.local
 
 | Variable | Description |
 | --- | --- |
-| `OPENAGORA_GATEWAY_SECRET` | HMAC secret for signing relay headers (falls back to a fixed development value when unset) |
+| `LINKAGORA_GATEWAY_SECRET` | HMAC secret for signing relay headers (falls back to a fixed development value when unset) |
 | `CRON_SECRET` | Bearer token for the health check cron endpoint (no check when unset) |
 | `X402_FACILITATOR_URL` or `CDP_API_KEY_ID` + `CDP_API_KEY_SECRET` | x402 payment verification and settlement in the relay |
 | `NEXT_PUBLIC_ANON_API_KEY` | A shared API key the Live Test Panel uses when the visitor enters none |

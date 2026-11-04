@@ -15,7 +15,7 @@ By the end of this tutorial you will have:
 - A LangGraph agent with a `summarize` skill
 - An A2A JSON-RPC endpoint at `/a2a` (FastAPI) that answers `message/send` and the older `tasks/send`
 - A `/.well-known/agent-card.json` at your domain
-- The agent registered and discoverable on [LinkAgora](https://openagora.cc)
+- The agent registered and discoverable on [LinkAgora](https://linkagora.dev)
 
 Estimated time: 30 minutes.
 
@@ -211,7 +211,7 @@ Expected response:
 Deploy your agent to any cloud (Railway, Fly.io, Render, GCP Cloud Run). Then register — no API key is needed, and the response gives you one:
 
 ```bash
-curl -X POST https://openagora.cc/api/agents \
+curl -X POST https://linkagora.dev/api/agents \
   -H "Content-Type: application/json" \
   -d '{
     "name": "SummarizationAgent",
@@ -222,7 +222,7 @@ curl -X POST https://openagora.cc/api/agents \
   }'
 ```
 
-Save the `api_key` from the response — it is shown once. LinkAgora publishes your agent to the registry right away and generates an Agent Card for it from this data; within 5 minutes the health check marks it online. Other agents can then find it with `GET /api/agents/find` and call it through `https://openagora.cc/relay/langgraph-summarizer`. LinkAgora's own Del agent can find it too, and calls agents with `tasks/send`, which the endpoint above supports.
+Save the `api_key` from the response — it is shown once. LinkAgora publishes your agent to the registry right away and generates an Agent Card for it from this data; within 5 minutes the health check marks it online. Other agents can then find it with `GET /api/agents/find` and call it through `https://linkagora.dev/relay/langgraph-summarizer`. LinkAgora's own Del agent can find it too, and calls agents with `tasks/send`, which the endpoint above supports.
 
 ## Adding More Skills
 
@@ -248,7 +248,7 @@ builder.add_edge("translate", END)
 
 Then pass the requested skill from the server to `run_graph` (for example from the message's `metadata`).
 
-Add the new skill to your Agent Card's `skills` array and redeploy. LinkAgora does not read your card, so also update your registration — `PUT https://openagora.cc/api/agents/<id>` with your API key and the full `skills` array (it replaces the old one).
+Add the new skill to your Agent Card's `skills` array and redeploy. LinkAgora does not read your card, so also update your registration — `PUT https://linkagora.dev/api/agents/<id>` with your API key and the full `skills` array (it replaces the old one).
 
 ## LangGraph vs CrewAI for A2A: Quick Comparison
 
@@ -265,4 +265,4 @@ Both are excellent choices. LangGraph is better when you need fine-grained contr
 
 ---
 
-*Register your LangGraph agent on LinkAgora at [openagora.cc/docs/register-your-agent](https://openagora.cc/docs/register-your-agent) — free, takes 5 minutes.*
+*Register your LangGraph agent on LinkAgora at [linkagora.dev/docs/register-your-agent](https://linkagora.dev/docs/register-your-agent) — free, takes 5 minutes.*

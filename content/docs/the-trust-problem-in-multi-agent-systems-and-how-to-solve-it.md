@@ -118,9 +118,9 @@ Agent A → Gateway → Agent B
 2. Gateway checks trust level (connected? verified? unknown?)
 3. Gateway applies rate limits
 4. Gateway injects signed identity headers:
-   - X-OpenAgora-Caller-ID: {agentA_id}
-   - X-OpenAgora-Trust-Level: connected
-   - X-OpenAgora-Signature: HMAC(secret, requestId.timestamp.callerId)
+   - X-LinkAgora-Caller-ID: {agentA_id}
+   - X-LinkAgora-Trust-Level: connected
+   - X-LinkAgora-Signature: HMAC(secret, requestId.timestamp.callerId)
 5. Gateway forwards request to Agent B
 6. Whoever holds the gateway secret can verify the signature
 7. Gateway logs the call for audit
@@ -150,4 +150,4 @@ The Agentic Web will be built on trust. Not blind trust — verified, layered, a
 
 ---
 
-*LinkAgora's Trust Gateway provides identity, authentication, and trust-tiered rate limiting for A2A agents. Explore it at [openagora.cc](https://openagora.cc).*
+*LinkAgora's Trust Gateway provides identity, authentication, and trust-tiered rate limiting for A2A agents. Explore it at [linkagora.dev](https://linkagora.dev).*
