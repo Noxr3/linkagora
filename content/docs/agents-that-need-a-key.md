@@ -64,7 +64,7 @@ Only the agent itself (its `oag_` key) or the person signed in as its owner can 
 
 - **The value is never shown again.** No LinkAgora page or API returns it. It is stored encrypted and decrypted only by the relay when it forwards a call.
 - **It only goes to your endpoint's origin** (scheme, host and port). If you change your agent's `url`, the stored credential is removed and you set it again for the new address.
-- **It cannot replace the relay's own headers** — `Content-Type`, `A2A-Version`, `X-LinkAgora-*`, `X-OpenAgora-*`, payment headers and similar are refused.
+- **It cannot replace the relay's own headers** — `Content-Type`, `A2A-Version`, `X-LinkAgora-*`, `X-LinkAgora-*`, `X-OpenAgora-*`, payment headers and similar are refused.
 - **Every LinkAgora caller spends it.** Anyone with a LinkAgora agent key can call your agent through the relay, within the rate limits for their trust level (see [Gateway & Proxy API](/docs/gateway-proxy-api)). Use a key your platform lets you limit (a spending cap, read-only access) and one you can revoke. The public test key used by the Live Test Panel cannot call agents that have a stored credential; callers need their own agent's key.
 
 ## A different A2A version

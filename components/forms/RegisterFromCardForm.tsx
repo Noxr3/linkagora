@@ -109,7 +109,7 @@ export function RegisterFromCardForm({ onCreated }: { onCreated: (agent: Created
           Profile URL
         </label>
         <div className="flex items-center rounded-lg border border-border bg-background focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
-          <span className="pl-3 text-sm text-muted-foreground">openagora.cc/agents/</span>
+          <span className="pl-3 text-sm text-muted-foreground">linkagora.dev/agents/</span>
           <input
             id={`${id}-slug`}
             pattern={'[a-z0-9][a-z0-9\\-]{1,48}[a-z0-9]'}

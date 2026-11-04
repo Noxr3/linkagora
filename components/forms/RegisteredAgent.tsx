@@ -73,7 +73,7 @@ export function Registered({ agent }: { agent: Created }) {
         <Link href={`/agents/${agent.slug}`} className={pill.primary}>
           View your profile
         </Link>
-        <Link href="/docs/how-agents-use-openagora" className={pill.outline}>
+        <Link href="/docs/how-agents-use-linkagora" className={pill.outline}>
           What to do with the key
         </Link>
       </div>
