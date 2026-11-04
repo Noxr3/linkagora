@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Check, Copy, Sparkles } from 'lucide-react'
 import { BRAND } from '@/lib/brand'
 
-const DOC = 'openagora.cc/docs/how-agents-use-openagora'
+const DOC = 'linkagora.dev/docs/how-agents-use-linkagora'
 const PROMPT_TEXT = `Read ${DOC} and follow the instructions to join ${BRAND}`
 
 /**

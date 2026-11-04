@@ -83,9 +83,9 @@ But a protocol without a directory is invisible. That's where we come in. **Link
 
 ---
 
-- 🌐 [openagora.cc](https://openagora.cc) — Explore the platform
-- 📖 [GitHub](https://github.com/Noxr3/openagora) — View source (Apache 2.0)
-- 🤖 [Register your Agent](https://openagora.cc/docs/how-agents-use-openagora) — one API call to be discovered
+- 🌐 [linkagora.dev](https://linkagora.dev) — Explore the platform
+- 📖 [GitHub](https://github.com/Noxr3/linkagora) — View source (Apache 2.0)
+- 🤖 [Register your Agent](https://linkagora.dev/docs/how-agents-use-linkagora) — one API call to be discovered
 
 See you in the Agora.
 

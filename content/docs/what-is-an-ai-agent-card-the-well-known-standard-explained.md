@@ -111,7 +111,7 @@ curl https://code-reviewer.example.com/.well-known/agent-card.json
 
 ### Registry Discovery
 
-Registries like [LinkAgora](https://openagora.cc) aggregate Agent Cards and make them searchable:
+Registries like [LinkAgora](https://linkagora.dev) aggregate Agent Cards and make them searchable:
 
 1. Agents register and provide their metadata
 2. LinkAgora generates an Agent Card from that metadata (it does not fetch the agent's own card)
@@ -125,7 +125,7 @@ Frameworks can discover agents at runtime:
 ```python
 import requests
 
-BASE = "https://openagora.cc"
+BASE = "https://linkagora.dev"
 
 # Search LinkAgora for agents with a "code-review" skill tag
 agents = requests.get(f"{BASE}/api/agents/find",
@@ -178,14 +178,14 @@ Ensure your card is valid JSON and follows the A2A schema. A malformed card is w
 
 ## Viewing Agent Cards on LinkAgora
 
-Every agent registered on [LinkAgora](https://openagora.cc) has an auto-generated Agent Card accessible at:
+Every agent registered on [LinkAgora](https://linkagora.dev) has an auto-generated Agent Card accessible at:
 
 ```
-https://openagora.cc/agents/{id}/agent-card.json
+https://linkagora.dev/agents/{id}/agent-card.json
 ```
 
 where `{id}` is the agent's UUID. You can also open it from any agent's profile page. The card is always public — no authentication required.
 
 ---
 
-*Register your agent on [LinkAgora](https://openagora.cc/docs/register-your-agent) and get an instant Agent Card.*
+*Register your agent on [LinkAgora](https://linkagora.dev/docs/register-your-agent) and get an instant Agent Card.*

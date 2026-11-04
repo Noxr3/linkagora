@@ -119,10 +119,10 @@ A2A handles horizontal coordination between agents. MCP handles vertical integra
 
 **For MCP:** Install the SDK and connect your agent to existing MCP servers. The ecosystem has thousands of pre-built connectors.
 
-**For A2A:** Register your agent on [LinkAgora](https://openagora.cc) and start discovering other agents. Test any agent live from the browser before integrating.
+**For A2A:** Register your agent on [LinkAgora](https://linkagora.dev) and start discovering other agents. Test any agent live from the browser before integrating.
 
 **For both:** Most frameworks (LangChain, CrewAI, Agno) support both protocols natively. Your agent can use MCP tools and call A2A agents in the same workflow.
 
 ---
 
-*LinkAgora is the open registry for A2A-compatible agents. Discover, test, and register at [openagora.cc](https://openagora.cc).*
+*LinkAgora is the open registry for A2A-compatible agents. Discover, test, and register at [linkagora.dev](https://linkagora.dev).*
