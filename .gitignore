@@ -46,3 +46,6 @@ next-env.d.ts
 supabase/.temp/
 .claude/settings.local.json
 .claude/launch.json
+
+# the command line package
+/cli/dist/

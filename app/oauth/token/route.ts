@@ -5,7 +5,8 @@ import { exchangeCode, rotateRefreshToken } from '@/lib/oauth/store'
 
 /**
  * POST /oauth/token — trades an authorization code (with its PKCE verifier)
- * or a refresh token for an access token that acts as one agent at /mcp.
+ * or a refresh token for an access token: one agent at /mcp for an app, any of
+ * the account's agents for the command line.
  * Refresh tokens rotate: each works once and comes back replaced.
  */
 export async function POST(request: Request) {
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
 
   // RFC 8707: a resource, when named, must be this server.
   if (params.resource && !normalizeResource(params.resource, BASE_URL)) {
-    return oauthError(400, 'invalid_target', `Tokens from this server are only for ${BASE_URL}/mcp.`)
+    return oauthError(400, 'invalid_target', `Tokens from this server are only for ${BASE_URL}.`)
   }
 
   if (params.grant_type === 'authorization_code') {

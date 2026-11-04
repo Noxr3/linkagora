@@ -16,6 +16,19 @@ import { createHash } from 'node:crypto'
 /** The one scope: act as the agent the account picked. */
 export const SCOPE = 'agent'
 
+/**
+ * The wider scope: act as any agent the account owns, naming one on each
+ * request. Only the first-party command line asks for it, and a token with it
+ * also works outside /mcp (lib/auth/caller.ts). Not advertised in the metadata:
+ * no other client can be given it.
+ */
+export const ACCOUNT_SCOPE = 'agents'
+
+/** The `linkagora` command line, a public client seeded by migration 019. */
+export const CLI_CLIENT_ID = 'linkagora-cli'
+/** Where the command line sends a browser it cannot reach: the page shows a code to paste. */
+export const CLI_CALLBACK_PATH = '/oauth/cli/callback'
+
 export const ACCESS_TOKEN_PREFIX = 'oagt_'
 export const REFRESH_TOKEN_PREFIX = 'oagr_'
 export const CLIENT_ID_PREFIX = 'oagc_'
@@ -186,6 +199,26 @@ export function matchRedirectUri(registered: readonly string[], presented: strin
       return false
     }
   })
+}
+
+/**
+ * The redirect URIs a client may use here. The command line's paste page lives
+ * on this deployment, so its address comes from the base URL rather than a row
+ * that would only be right for one environment.
+ */
+export function registeredRedirectUris(clientId: string, stored: readonly string[], base: string): readonly string[] {
+  return clientId === CLI_CLIENT_ID ? [...stored, trimSlash(base) + CLI_CALLBACK_PATH] : stored
+}
+
+/**
+ * The scope a request gets. Everyone gets SCOPE as before, whatever else they
+ * ask for; asking for ACCOUNT_SCOPE is an error unless the client is the
+ * command line, so a connector cannot quietly ask for the whole account.
+ */
+export function grantedScope(clientId: string, requested: string | null | undefined): string | null {
+  const wanted = (requested ?? '').split(/\s+/).filter(Boolean)
+  if (!wanted.includes(ACCOUNT_SCOPE)) return SCOPE
+  return clientId === CLI_CLIENT_ID ? ACCOUNT_SCOPE : null
 }
 
 /** How the consent page should describe where the user is sent next. */

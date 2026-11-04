@@ -1,6 +1,7 @@
 import { BASE_URL, CARD_EXTENSION, LEGACY_CARD_EXTENSION } from '@/lib/brand'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey, withLegacyGatewayHeaders } from '@/lib/gateway/auth'
+import { actingAgent } from '@/lib/auth/resolve-caller'
+import { withLegacyGatewayHeaders } from '@/lib/gateway/auth'
 import { getTrustLevel, hasCapability } from '@/lib/gateway/ratelimit'
 
 /**
@@ -19,7 +20,7 @@ export async function GET(
   const { id } = await params
 
   // ── Authenticate caller ────────────────────────────────────────────────
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) {
     return Response.json(
       {

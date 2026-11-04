@@ -1,4 +1,4 @@
-import { resolveApiKey } from '@/lib/gateway/auth'
+import { actingAgent } from '@/lib/auth/resolve-caller'
 import { replyToTask, type Reply } from '@/lib/inbox/service'
 import { toResponse } from '@/lib/outcome'
 
@@ -11,7 +11,7 @@ import { toResponse } from '@/lib/outcome'
  */
 export async function POST(request: Request, { params }: { params: Promise<{ taskId: string }> }) {
   const { taskId } = await params
-  const caller = await resolveApiKey(request.headers.get('authorization'))
+  const caller = await actingAgent(request)
   if (!caller) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   let body: Reply

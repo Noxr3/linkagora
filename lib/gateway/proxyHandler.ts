@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey, signGatewayHeaders, withLegacyGatewayHeaders } from '@/lib/gateway/auth'
+import { resolveCaller } from '@/lib/auth/resolve-caller'
+import { signGatewayHeaders, withLegacyGatewayHeaders } from '@/lib/gateway/auth'
 import { getTrustLevel, checkRateLimit } from '@/lib/gateway/ratelimit'
 import { verifyPayment, settlePayment, encodeSettlementHeader, extractPaymentDetails } from '@/lib/gateway/x402'
 import { handlePullRequest } from '@/lib/inbox/relay'
@@ -30,23 +31,31 @@ export async function handleProxyRequest(
   slugOrId: string,
   /**
    * In-process callers that already authenticated the caller pass its agent
-   * here — only the MCP server, for a caller signed in with OAuth. The
-   * /relay route never does, so over HTTP only an `oag_` key gets in.
+   * here: only the MCP server. Over HTTP the credential decides (lib/auth/caller.ts).
    */
   options: { callerAgentId?: string } = {},
 ): Promise<Response> {
   const start = Date.now()
 
   // ── 1. Authenticate caller ───────────────────────────────────────────────
-  const caller = options.callerAgentId
-    ? { agentId: options.callerAgentId }
-    : await resolveApiKey(request.headers.get('authorization'))
-  if (!caller) {
-    return Response.json(
-      { error: 'Unauthorized', hint: 'Provide your LinkAgora API key as: Authorization: Bearer oag_...' },
-      { status: 401 },
-    )
+  let callerAgentId = options.callerAgentId ?? null
+  if (!callerAgentId) {
+    const resolved = await resolveCaller(request, 'relay')
+    if (resolved.refusal) {
+      return Response.json(
+        { error: resolved.refusal.status === 401 ? 'Unauthorized' : 'Forbidden', code: resolved.refusal.code, hint: resolved.refusal.message },
+        { status: resolved.refusal.status },
+      )
+    }
+    callerAgentId = resolved.caller?.agentId ?? null
+    if (!callerAgentId) {
+      const hint = resolved.caller
+        ? 'Name the agent to act as in the LinkAgora-Agent header (the linkagora command line sends it after `linkagora agent use <slug>`).'
+        : 'Provide your LinkAgora API key as: Authorization: Bearer oag_...'
+      return Response.json({ error: 'Unauthorized', hint }, { status: 401 })
+    }
   }
+  const caller = { agentId: callerAgentId }
 
   // ── 2. Resolve target agent (by UUID or slug) ────────────────────────────
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId)

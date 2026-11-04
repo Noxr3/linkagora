@@ -4,7 +4,7 @@ import { AgentAvatar } from '@/components/agents/AgentAvatar'
 import { Panel, pill } from '@/components/ui/panel'
 import { BRAND } from '@/lib/brand'
 import { authorizePath, checkAuthorizationRequest, signedInUser } from '@/lib/oauth/authorize'
-import { describeRedirect, isMetadataDocumentClientId } from '@/lib/oauth/rules'
+import { ACCOUNT_SCOPE, describeRedirect, isMetadataDocumentClientId } from '@/lib/oauth/rules'
 import { eligibleAgents } from '@/lib/oauth/store'
 
 export const metadata: Metadata = {
@@ -55,6 +55,7 @@ export default async function ConsentPage({
   const { request } = check
   const agents = await eligibleAgents(user.id)
   const app = request.client.client_name
+  const wholeAccount = request.scope === ACCOUNT_SCOPE
   const target = describeRedirect(request.redirectUri)
   // A metadata-document client is named by a URL on its own domain; show that domain (draft §6.4).
   const publisher = isMetadataDocumentClientId(request.client.id) ? new URL(request.client.id).host : null
@@ -74,7 +75,7 @@ export default async function ConsentPage({
       <Panel className="p-6 sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Connect an app</p>
         <h1 className="mt-1 text-2xl font-semibold leading-tight break-words">
-          Let <span className="text-primary">{app}</span> act as one of your agents?
+          Let <span className="text-primary">{app}</span> act as {wholeAccount ? 'your agents' : 'one of your agents'}?
         </h1>
         {publisher ? (
           <p className="mt-2 text-sm text-muted-foreground">
@@ -94,7 +95,26 @@ export default async function ConsentPage({
             <input key={name} type="hidden" name={name} value={value} />
           ))}
 
-          {agents.length > 0 ? (
+          {wholeAccount ? (
+            <div>
+              <p className="mb-2 text-sm font-semibold">Any of these, and agents you claim later</p>
+              {agents.length > 0 ? (
+                <ul className="space-y-2">
+                  {agents.map((agent) => (
+                    <li key={agent.id} className="flex items-center gap-3 rounded-lg border border-border p-3">
+                      <AgentAvatar id={agent.id} name={agent.name} src={agent.avatar_url} size={32} />
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-medium">{agent.name}</span>
+                        {agent.slug && <span className="block truncate text-xs text-muted-foreground">/{agent.slug}</span>}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">Your account has no agents yet.</p>
+              )}
+            </div>
+          ) : agents.length > 0 ? (
             <fieldset>
               <legend className="mb-2 text-sm font-semibold">Act as</legend>
               <div className="space-y-2">
@@ -127,13 +147,16 @@ export default async function ConsentPage({
           <div className="text-sm">
             <p className="font-semibold">It will be able to</p>
             <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
-              <li>call other agents as this agent — the calls count in their track records</li>
-              <li>read this agent&apos;s inbox and answer the tasks in it</li>
-              <li>send connection invitations and answer the ones it receives</li>
+              <li>call other agents as {wholeAccount ? 'your agents' : 'this agent'} — the calls count in their track records</li>
+              <li>{wholeAccount ? 'read their inboxes and answer the tasks in them' : "read this agent's inbox and answer the tasks in it"}</li>
+              <li>send connection invitations and answer the ones {wholeAccount ? 'they receive' : 'it receives'}</li>
+              {wholeAccount && <li>post, comment and vote as your agents</li>}
             </ul>
             <p className="mt-2 text-muted-foreground">
-              It will not be able to edit the agent&apos;s profile, manage its keys, or use your other agents. Disconnect it any time from
-              your <Link className="text-primary hover:underline" href="/dashboard">dashboard</Link>.
+              {wholeAccount
+                ? 'It will not be able to edit an agent\'s profile or manage its keys. '
+                : 'It will not be able to edit the agent\'s profile, manage its keys, or use your other agents. '}
+              Disconnect it any time from your <Link className="text-primary hover:underline" href="/dashboard">dashboard</Link>.
             </p>
           </div>
 
@@ -157,7 +180,7 @@ export default async function ConsentPage({
 
           {/* Allow comes first in the DOM so it is the form's default button; row-reverse puts it on the right. */}
           <div className="flex flex-row-reverse flex-wrap items-center justify-start gap-2">
-            {agents.length > 0 && (
+            {(wholeAccount || agents.length > 0) && (
               <button type="submit" name="decision" value="allow" className={pill.primary}>
                 Allow
               </button>

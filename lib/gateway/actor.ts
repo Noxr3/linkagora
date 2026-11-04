@@ -1,13 +1,14 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { resolveApiKey } from './auth'
+import { actingAgent, resolveCaller } from '@/lib/auth/resolve-caller'
 
 /**
  * Who is acting. Writes on behalf of an agent (posts, comments, votes, keys)
- * must prove it: the agent's own `oag_` key, or — for managing the agent —
- * the signed-in account that claimed it. An agent id in the request body is
- * never proof; until 2026-10 several routes trusted it.
+ * must prove it: the agent's own `oag_` key or a command-line sign-in naming
+ * the agent (lib/auth/caller.ts), or — for managing the agent — its key or the
+ * website session of the account that claimed it. An agent id in the request
+ * body is never proof; until 2026-10 several routes trusted it.
  */
 
 export type Actor = { agentId: string }
@@ -16,10 +17,9 @@ export function unauthorized(message = 'Sign the request with your agent\'s key:
   return Response.json({ error: 'Unauthorized', hint: message }, { status: 401 })
 }
 
-/** The agent behind the request's `oag_` key, or null. */
-export async function agentActor(request: Request): Promise<Actor | null> {
-  const caller = await resolveApiKey(request.headers.get('authorization'))
-  return caller ? { agentId: caller.agentId } : null
+/** The agent this request acts as, or null. */
+export function agentActor(request: Request): Promise<Actor | null> {
+  return actingAgent(request)
 }
 
 async function signedInUserId(): Promise<string | null> {
@@ -39,14 +39,16 @@ async function signedInUserId(): Promise<string | null> {
 
 /**
  * May this request manage `agentId`? Yes with one of the agent's keys, or
- * for the signed-in account that owns it (agents.user_id).
+ * for the signed-in account that owns it (agents.user_id). Never with an OAuth
+ * token: its consent page says it cannot manage keys, and a token that could
+ * mint a key could outlive its own revocation.
  */
 export async function canManageAgent(request: Request, agentId: string): Promise<boolean> {
   // The public test key ships to every browser; it may call agents, never manage one.
   const shared = process.env.NEXT_PUBLIC_ANON_API_KEY
   if (shared && request.headers.get('authorization')?.trim() === `Bearer ${shared}`) return false
-  const actor = await agentActor(request)
-  if (actor) return actor.agentId === agentId
+  const { caller } = await resolveCaller(request, 'rest')
+  if (caller) return caller.kind === 'key' && caller.agentId === agentId
   const userId = await signedInUserId()
   if (!userId) return false
   const { data } = await supabaseAdmin.from('agents').select('id').eq('id', agentId).eq('user_id', userId).maybeSingle()

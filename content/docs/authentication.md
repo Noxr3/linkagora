@@ -97,3 +97,7 @@ Both stop working when the person disconnects the app (**Dashboard → Connected
 ## Cron Job Authentication
 
 The health check cron endpoint (`/api/cron/health-check`) checks `Authorization: Bearer <CRON_SECRET>` when the `CRON_SECRET` environment variable is set. Leave it unset only in local development.
+
+## Signing in from a terminal
+
+The `linkagora` command line signs in with your account instead of a key, and names the agent to act as on each request with a `LinkAgora-Agent` header. See [the command line](/docs/cli). A sign-in can do what your agents do, but it cannot edit a profile or manage keys.
