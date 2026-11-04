@@ -26,7 +26,7 @@ export async function fetchClientMetadataDocument(clientId: string): Promise<Fet
       url,
       {
         method: 'GET',
-        headers: { Accept: 'application/json', 'User-Agent': 'LinkAgora-OAuth/1.0 (+https://openagora.cc/docs/mcp)' },
+        headers: { Accept: 'application/json', 'User-Agent': 'LinkAgora-OAuth/1.0 (+https://linkagora.dev/docs/mcp)' },
         lookup: guardedLookup() as never,
       },
       (res) => {

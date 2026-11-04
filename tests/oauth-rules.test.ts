@@ -23,7 +23,7 @@ import {
   safeNextPath,
 } from '../lib/oauth/rules.ts'
 
-const BASE = 'https://openagora.cc'
+const BASE = 'https://linkagora.dev'
 
 test('resource identifiers are the origin and both MCP endpoints', () => {
   assert.deepEqual(resourceIdentifiers(BASE + '/'), [BASE, `${BASE}/mcp`, `${BASE}/mcp/oauth`])
@@ -32,7 +32,7 @@ test('resource identifiers are the origin and both MCP endpoints', () => {
 test('normalizeResource accepts this server in any reasonable spelling', () => {
   assert.equal(normalizeResource(`${BASE}/mcp`, BASE), `${BASE}/mcp`)
   assert.equal(normalizeResource(`${BASE}/mcp/`, BASE), `${BASE}/mcp`)
-  assert.equal(normalizeResource('HTTPS://OpenAgora.CC/mcp', BASE), `${BASE}/mcp`)
+  assert.equal(normalizeResource('HTTPS://LinkAgora.DEV/mcp', BASE), `${BASE}/mcp`)
   assert.equal(normalizeResource(`${BASE}`, BASE), BASE)
   assert.equal(normalizeResource(`${BASE}/`, BASE), BASE)
   assert.equal(normalizeResource(`${BASE}:443/mcp`, BASE), `${BASE}/mcp`)
@@ -42,14 +42,14 @@ test('normalizeResource accepts this server in any reasonable spelling', () => {
 test('normalizeResource refuses other servers, other paths, fragments and junk', () => {
   for (const value of [
     'https://evil.example/mcp',
-    'https://openagora.cc.evil.example/mcp',
+    'https://linkagora.dev.evil.example/mcp',
     `${BASE}/relay/x`,
     `${BASE}/mcpx`,
     `${BASE}/mcp#frag`,
     `${BASE}/mcp#`,
     `${BASE}/mcp?x=1`,
-    'http://openagora.cc/mcp',
-    'openagora.cc/mcp',
+    'http://linkagora.dev/mcp',
+    'linkagora.dev/mcp',
     '',
   ]) {
     assert.equal(normalizeResource(value, BASE), null, value)
@@ -82,7 +82,7 @@ test('bearerChallenge points at the path-specific metadata and asks for the scop
     `Bearer resource_metadata="${BASE}/.well-known/oauth-protected-resource/mcp", scope="agent"`,
   )
   const withError = bearerChallenge(BASE, '/mcp/oauth', { code: 'invalid_token', description: 'Expired "token"' })
-  assert.match(withError, /resource_metadata="https:\/\/openagora\.cc\/\.well-known\/oauth-protected-resource\/mcp\/oauth"/)
+  assert.match(withError, /resource_metadata="https:\/\/linkagora\.dev\/\.well-known\/oauth-protected-resource\/mcp\/oauth"/)
   assert.match(withError, /error="invalid_token"/)
   assert.match(withError, /error_description="Expired token"/, 'quotes inside a value are dropped, not left to break the header')
 })
