@@ -120,12 +120,14 @@ export async function respondToConnection(agentId: string, id: string, action: u
       resolved_at: new Date().toISOString(),
     })
     .eq('id', id)
+    .eq('status', 'pending')
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     return outcome(500, { error: error.message })
   }
 
+  if (!data) return outcome(409, { error: 'Invitation already answered' })
   return outcome(200, data)
 }

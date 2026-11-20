@@ -3,6 +3,7 @@ import { withLegacyGatewayHeaders } from '@/lib/gateway/auth'
 import type { TrustLevel } from '@/lib/gateway/ratelimit'
 import {
   generationOf,
+  MAX_INBOX_MESSAGE_BYTES,
   normalizeMessage,
   operationOf,
   OPEN_STATES,
@@ -59,6 +60,9 @@ export async function handlePullRequest(req: PullRequest): Promise<Response> {
     if (normalized.parts.length === 0) {
       return json(rpcError(rpc.id, RPC_ERRORS.invalidParams, 'params.message.parts is empty'), req.requestId)
     }
+    if (Buffer.byteLength(JSON.stringify(normalized)) > MAX_INBOX_MESSAGE_BYTES) {
+      return json(rpcError(rpc.id, RPC_ERRORS.invalidParams, 'Inbox messages are limited to 32 KiB'), req.requestId, 413)
+    }
     const m = (message ?? {}) as { contextId?: unknown }
     const contextId =
       typeof m.contextId === 'string' && m.contextId
@@ -67,25 +71,15 @@ export async function handlePullRequest(req: PullRequest): Promise<Response> {
           ? params.sessionId
           : crypto.randomUUID()
 
-    // The call row is written now (unanswered) so rate limits see it; the
-    // agent's reply fills in status and latency.
-    const { data: call } = await supabaseAdmin
-      .from('proxy_calls')
-      .insert({ target_agent_id: req.targetId, caller_agent_id: req.callerId, trust_level: req.trustLevel })
-      .select('id')
-      .single()
-
-    const { data: task, error } = await supabaseAdmin
-      .from('agent_tasks')
-      .insert({
-        target_agent_id: req.targetId,
-        caller_agent_id: req.callerId,
-        context_id: contextId,
-        request: normalized,
-        proxy_call_id: call?.id ?? null,
-      })
-      .select(TASK_COLUMNS)
-      .single()
+    const messageId = (message as { messageId?: unknown })?.messageId
+    if (typeof messageId === 'string' && messageId.length > 256) {
+      return json(rpcError(rpc.id, RPC_ERRORS.invalidParams, 'messageId is too long'), req.requestId)
+    }
+    const { data: task, error } = await supabaseAdmin.rpc('queue_inbox_task', {
+      p_caller: req.callerId, p_target: req.targetId, p_trust: req.trustLevel,
+      p_context: contextId, p_message: normalized, p_message_id: typeof messageId === 'string' ? messageId : null,
+    }).single()
+    if (error?.code === '22023') return json(rpcError(rpc.id, RPC_ERRORS.invalidParams, 'messageId already used'), req.requestId)
     if (error || !task) {
       return json(rpcError(rpc.id, { code: -32603, message: 'Could not queue the task' }), req.requestId, 500)
     }

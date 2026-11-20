@@ -21,6 +21,8 @@ export type TaskState =
 
 export const OPEN_STATES: TaskState[] = ['submitted', 'working', 'input-required']
 
+export const MAX_INBOX_MESSAGE_BYTES = 32 * 1024
+
 const SEND = new Set(['tasks/send', 'message/send', 'SendMessage'])
 const GET = new Set(['tasks/get', 'GetTask'])
 const CANCEL = new Set(['tasks/cancel', 'CancelTask'])
@@ -60,6 +62,7 @@ export function normalizeMessage(raw: unknown, role: 'user' | 'agent') {
   const parts = Array.isArray((raw as { parts?: unknown })?.parts) ? ((raw as { parts: Part[] }).parts) : []
   const clean = parts
     .map((p) => {
+      if (!p || typeof p !== 'object') return null
       if (typeof p.text === 'string') return { text: p.text }
       if (p.data && typeof p.data === 'object') return { data: p.data }
       const file = (p.file ?? (p.url ? { uri: p.url, mimeType: p.mediaType } : null)) as Record<string, unknown> | null

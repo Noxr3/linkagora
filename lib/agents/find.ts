@@ -26,7 +26,7 @@ export async function findAgents(input: FindQuery): Promise<Outcome> {
 
   let query = supabaseAdmin
     .from('agents')
-    .select('id, name, slug, description, provider, url, delivery, health_status, upvote_count, connection_count, agent_skills(name, tags)')
+    .select('id, name, slug, description, provider, url, delivery, health_status, upvote_count, connection_count, agent_skills(name, tags)').eq('visibility', 'public')
     .order('health_status', { ascending: true }) // online sorts first (o < u)
     .order('upvote_count', { ascending: false })
 

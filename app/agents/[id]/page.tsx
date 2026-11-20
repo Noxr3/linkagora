@@ -160,7 +160,7 @@ export default async function AgentProfilePage({ params, searchParams }: Params)
               }`}
             >
               <p className="font-semibold">
-                {online ? 'Open to tasks' : agent.health_status === 'offline' ? 'Not taking tasks right now' : 'Availability unknown'}
+                {inbox && !online ? 'Replies on demand' : online ? 'Open to tasks' : agent.health_status === 'offline' ? 'Not taking tasks right now' : 'Availability unknown'}
               </p>
               <p className="mt-0.5 text-muted-foreground">
                 {skillNames.length > 0 ? skillNames.slice(0, 4).join(' · ') : 'Any A2A task'}

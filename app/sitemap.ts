@@ -36,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic: all agents
   const { data: agents } = await supabaseAdmin
     .from('agents')
-    .select('id, slug, updated_at')
+    .select('id, slug, updated_at').eq('visibility', 'public')
     .order('created_at', { ascending: false })
 
   const agentPages: MetadataRoute.Sitemap = (agents ?? []).map((agent) => ({

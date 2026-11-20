@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   let query = supabaseAdmin
     .from('agents')
-    .select('*, agent_skills(*)', { count: 'exact' })
+    .select('*, agent_skills(*)', { count: 'exact' }).eq('visibility', 'public')
 
   if (q) {
     query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,slug.ilike.%${q}%`)
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   let exactQuery = q
     ? supabaseAdmin
         .from('agents')
-        .select('*, agent_skills(*)')
+        .select('*, agent_skills(*)').eq('visibility', 'public')
         .or(`name.ilike.${q},slug.eq.${q.toLowerCase()}`)
     : null
   if (exactQuery && status) exactQuery = exactQuery.eq('health_status', status)
@@ -80,16 +80,20 @@ export async function GET(request: Request) {
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  const body = await request.json().catch(() => null)
+  if (!body || typeof body !== 'object') return Response.json({ error: 'Supply a profile as JSON' }, { status: 400 })
   const { name, url, description, provider, capabilities, skills, avatar_url, payment_schemes, payment_address, slug: rawSlug } =
     body
 
   // push: the relay forwards calls to `url`. pull: the agent has no public
   // endpoint and checks GET /api/inbox instead.
-  const delivery = body.delivery === 'pull' ? 'pull' : 'push'
-  if (!name || !rawSlug || (delivery === 'push' && !url)) {
+  if (body.visibility === 'private') {
+    return Response.json({ error: 'Use /api/agents/private for a private inbox' }, { status: 400 })
+  }
+  const delivery = body.delivery ?? (url ? 'push' : 'pull')
+  if (!['push', 'pull'].includes(delivery) || !name || !rawSlug || (delivery === 'push' && !url)) {
     return Response.json(
-      { error: 'name and slug are required, and url too unless "delivery": "pull"' },
+      { error: 'Supply name and slug. Push delivery also requires a URL.' },
       { status: 400 },
     )
   }
@@ -115,58 +119,27 @@ export async function POST(request: Request) {
     return Response.json({ error: 'An agent with this endpoint URL is already registered' }, { status: 409 })
   }
 
-  const { data: agent, error: agentError } = await supabaseAdmin
-    .from('agents')
-    .insert({
-      name,
-      url: delivery === 'push' ? url : null,
-      delivery,
-      slug,
-      description: description ?? '',
-      provider: provider ?? '',
-      capabilities: capabilities ?? [],
-      avatar_url: avatar_url ?? null,
-      payment_schemes: payment_schemes ?? [],
-      payment_address: payment_address ?? null,
-    })
-    .select()
-    .single()
-
-  if (agentError) {
-    const status = agentError.code === '23505' ? 409 : 500
-    const message = agentError.code === '23505' ? `Slug "${slug}" is already taken` : agentError.message
-    return Response.json({ error: message }, { status })
-  }
-
-  // Insert skills if provided
-  if (skills?.length > 0) {
-    const skillRows = skills.map(
-      (s: { name: string; description?: string; tags?: string[] }) => ({
-        agent_id: agent.id,
-        name: s.name,
-        description: s.description ?? '',
-        tags: s.tags ?? [],
-      })
-    )
-
-    await supabaseAdmin.from('agent_skills').insert(skillRows)
-  }
-
-  // Auto-generate an API key for the agent
   const { key, hash } = generateApiKey()
-  await supabaseAdmin
-    .from('api_keys')
-    .insert({ agent_id: agent.id, key_hash: hash, name: 'default' })
+  const { data: agentId, error: registrationError } = await supabaseAdmin.rpc('register_public_agent', {
+    p_profile: { name, url: delivery === 'push' ? url : null, delivery, slug, description, provider,
+      capabilities: capabilities ?? [], avatar_url, payment_schemes: payment_schemes ?? [], payment_address },
+    p_skills: skills ?? [], p_hash: hash,
+  })
+  if (registrationError || !agentId) {
+    const duplicate = registrationError?.code === '23505'
+    return Response.json({ error: duplicate ? 'Slug or endpoint already registered' : 'Could not register profile' }, { status: duplicate ? 409 : 400 })
+  }
 
   // Re-fetch with skills
   const { data: fullAgent } = await supabaseAdmin
     .from('agents')
     .select('*, agent_skills(*)')
-    .eq('id', agent.id)
+    .eq('id', agentId)
     .single()
 
   return Response.json(
     {
+      id: agentId, slug, delivery,
       ...fullAgent,
       api_key: key,
       warning: 'Store this key securely. It will not be shown again.',

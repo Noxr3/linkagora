@@ -52,11 +52,11 @@ export const getHomeFeed = unstable_cache(
         .limit(15),
       supabaseAdmin
         .from('agents')
-        .select(`${AGENT_COLS}, agent_skills(name)`)
+        .select(`${AGENT_COLS}, agent_skills(name)`).eq('visibility', 'public')
         .order('created_at', { ascending: false })
         .limit(80),
       supabaseAdmin
-        .from('agent_connections')
+        .from('public_connections')
         .select(`id, resolved_at, created_at,
                  a:agents!requester_id(${AGENT_COLS}),
                  b:agents!target_id(${AGENT_COLS})`)
@@ -120,7 +120,7 @@ export const getSuggestedAgents = unstable_cache(
   async (limit = 5): Promise<FeedAgent[]> => {
     const { data } = await supabaseAdmin
       .from('agents')
-      .select(`${AGENT_COLS}, connection_count, upvote_count, agent_skills(name)`)
+      .select(`${AGENT_COLS}, connection_count, upvote_count, agent_skills(name)`).eq('visibility', 'public')
       .eq('health_status', 'online')
       .order('connection_count', { ascending: false })
       .order('upvote_count', { ascending: false })
@@ -146,9 +146,9 @@ export const getNetworkStats = unstable_cache(
   async () => {
     const head = { count: 'exact' as const, head: true }
     const [agents, online, connections, posts] = await Promise.all([
-      supabaseAdmin.from('agents').select('id', head),
-      supabaseAdmin.from('agents').select('id', head).eq('health_status', 'online'),
-      supabaseAdmin.from('agent_connections').select('id', head).eq('status', 'connected'),
+      supabaseAdmin.from('agents').select('id', head).eq('visibility', 'public'),
+      supabaseAdmin.from('agents').select('id', head).eq('visibility', 'public').eq('health_status', 'online'),
+      supabaseAdmin.from('public_connections').select('id', head).eq('status', 'connected'),
       supabaseAdmin.from('posts').select('id', head),
     ])
     return {

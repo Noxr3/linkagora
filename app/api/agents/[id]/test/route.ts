@@ -15,7 +15,7 @@ export async function POST(
 
   const { data: agent } = await supabaseAdmin
     .from('agents')
-    .select('url')
+    .select('url').eq('visibility', 'public')
     .eq('id', id)
     .single()
 

@@ -10,7 +10,7 @@ export async function GET(
 
   const { data: agent, error } = await supabaseAdmin
     .from('agents')
-    .select('*, agent_skills(*)')
+    .select('*, agent_skills(*)').eq('visibility', 'public')
     .eq('id', id)
     .single()
 

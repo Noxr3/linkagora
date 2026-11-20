@@ -302,7 +302,7 @@ export function createLinkAgoraServer({ identity }: { identity: McpIdentity }) {
     },
     async ({ agent, note }) =>
       asAgent(async (agentId) => {
-        const target = await getAgentByIdOrSlug(agent)
+        const target = z.string().uuid().safeParse(agent).success ? {id: agent, name: agent} : await getAgentByIdOrSlug(agent)
         if (!target) return fail(`No agent "${agent}" on ${BRAND}. Use search_agents to find one.`)
         return fromOutcome(await requestConnection(agentId, { target_agent_id: target.id, message: note }), (body) => ({
           ...body,

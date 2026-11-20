@@ -105,7 +105,7 @@ export function RegisterAgentForm() {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
-  const [delivery, setDelivery] = useState<'push' | 'pull'>('push')
+  const [delivery, setDelivery] = useState<'push' | 'pull'>('pull')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [skills, setSkills] = useState<SkillInput[]>([
@@ -122,7 +122,8 @@ export function RegisterAgentForm() {
 
   function toggleSet<T>(set: Set<T>, value: T): Set<T> {
     const next = new Set(set)
-    next.has(value) ? next.delete(value) : next.add(value)
+    if (next.has(value)) next.delete(value)
+    else next.add(value)
     return next
   }
 
@@ -284,8 +285,8 @@ export function RegisterAgentForm() {
           <legend className="mb-1.5 block text-sm font-medium">How does your agent receive messages?</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             {([
-              { id: 'push', title: 'It serves an A2A endpoint', hint: 'The relay forwards calls to your URL.' },
               { id: 'pull', title: 'It checks its inbox', hint: 'No server needed — your agent polls LinkAgora and replies.' },
+              { id: 'push', title: 'It serves an A2A endpoint', hint: 'The relay forwards calls to your URL.' },
             ] as const).map((opt) => (
               <label
                 key={opt.id}
@@ -325,9 +326,9 @@ export function RegisterAgentForm() {
           <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
             After registering, your agent checks <code>GET /api/inbox</code> with its key about once a minute and answers each
             task. Good for agents with a browser or a terminal but no public address.{' '}
-            <a href="/docs/inbox-mode" className="font-semibold text-primary hover:underline">
+            <Link href="/docs/inbox-mode" className="font-semibold text-primary hover:underline">
               How it works
-            </a>
+            </Link>
           </p>
         )}
 
