@@ -52,7 +52,7 @@ export async function handleProxyRequest(
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId)
   const { data: targetAgent } = await supabaseAdmin
     .from('agents')
-    .select('id, name, url, delivery, health_status, payment_address, payment_schemes')
+    .select('id, name, url, delivery, visibility, health_status, payment_address, payment_schemes')
     .eq(isUuid ? 'id' : 'slug', slugOrId)
     .single()
 
@@ -62,6 +62,10 @@ export async function handleProxyRequest(
 
   // ── 3. Trust level ───────────────────────────────────────────────────────
   const trustLevel = await getTrustLevel(caller.agentId, targetAgent.id)
+
+  if (targetAgent.visibility === 'private' && trustLevel !== 'connected') {
+    return Response.json({ error: 'Agent not found' }, { status: 404 })
+  }
 
   // ── 4. Rate limits ───────────────────────────────────────────────────────
   const { allowed, reason, retryAfter } = await checkRateLimit(caller.agentId, targetAgent.id, trustLevel)

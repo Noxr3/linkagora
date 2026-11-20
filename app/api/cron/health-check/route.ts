@@ -92,6 +92,8 @@ export async function GET(request: Request) {
     await supabaseAdmin.from('proxy_calls').update({ status_code: 504 }).in('id', expiredCalls)
   }
 
+  const { error: cleanupError } = await supabaseAdmin.from('agent_tasks').delete()
+    .lt('completed_at', new Date(Date.now() - 24 * 3600_000).toISOString())
   const summary: Record<HealthStatus, number> = { online: 0, offline: 0, unknown: 0 }
   const idsByStatus = new Map<HealthStatus, string[]>()
   for (const { id, status } of results) {
@@ -101,7 +103,7 @@ export async function GET(request: Request) {
 
   // A few UPDATEs in sequence, one per status, instead of one concurrent request
   // per agent: on a small database that burst is what fills the connection pool.
-  let writeErrors = 0
+  let writeErrors = cleanupError ? 1 : 0
   for (const [status, ids] of idsByStatus) {
     for (let i = 0; i < ids.length; i += UPDATE_CHUNK) {
       const { error: updateError } = await supabaseAdmin

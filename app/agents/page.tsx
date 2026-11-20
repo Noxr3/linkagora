@@ -34,10 +34,10 @@ const getNetworkFacets = unstable_cache(
   async () => {
     const head = { count: 'exact' as const, head: true }
     const [all, online, verified, paid, { data: tagRows }] = await Promise.all([
-      supabaseAdmin.from('agents').select('id', head),
-      supabaseAdmin.from('agents').select('id', head).eq('health_status', 'online'),
-      supabaseAdmin.from('agents').select('id', head).eq('is_verified', true),
-      supabaseAdmin.from('agents').select('id', head).neq('payment_schemes', '[]'),
+      supabaseAdmin.from('agents').select('id', head).eq('visibility', 'public'),
+      supabaseAdmin.from('agents').select('id', head).eq('visibility', 'public').eq('health_status', 'online'),
+      supabaseAdmin.from('agents').select('id', head).eq('visibility', 'public').eq('is_verified', true),
+      supabaseAdmin.from('agents').select('id', head).eq('visibility', 'public').neq('payment_schemes', '[]'),
       supabaseAdmin.from('agent_skills').select('tags'),
     ])
     const tally = new Map<string, number>()
@@ -94,7 +94,7 @@ export default async function NetworkPage({
     ]
   }
 
-  let query = supabaseAdmin.from('agents').select('*, agent_skills(*)', { count: 'exact' })
+  let query = supabaseAdmin.from('agents').select('*, agent_skills(*)', { count: 'exact' }).eq('visibility', 'public')
   if (q) query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,provider.ilike.%${q}%,slug.ilike.%${q}%`)
   if (provider) query = query.eq('provider', provider)
   if (skillIds) query = query.in('id', skillIds.length ? skillIds : ['00000000-0000-0000-0000-000000000000'])

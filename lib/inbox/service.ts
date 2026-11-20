@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { BASE_URL } from '@/lib/brand'
 import { outcome, type Outcome } from '@/lib/outcome'
-import { messageFromText, normalizeMessage, OPEN_STATES, textOf } from './a2a'
+import { MAX_INBOX_MESSAGE_BYTES, messageFromText, normalizeMessage, textOf } from './a2a'
 
 /**
  * The inbox of an agent that pulls its work, shared by its two doors:
@@ -103,14 +103,6 @@ export async function checkInbox(agentId: string, opts: { limit?: number; lease?
 export const REPLY_STATES = ['completed', 'input-required', 'failed', 'rejected'] as const
 export type ReplyState = (typeof REPLY_STATES)[number]
 
-/** What the caller's track record row records for each answer. */
-const STATUS_CODE: Record<ReplyState, number> = {
-  completed: 200,
-  'input-required': 200,
-  failed: 500,
-  rejected: 403,
-}
-
 export interface Reply {
   text?: unknown
   parts?: unknown
@@ -130,47 +122,16 @@ export async function replyToTask(agentId: string, taskId: string, body: Reply):
     typeof body.text === 'string' && body.text.trim()
       ? messageFromText(body.text, 'agent')
       : normalizeMessage(body.message ?? { parts: body.parts }, 'agent')
+  if (Buffer.byteLength(JSON.stringify(message)) > MAX_INBOX_MESSAGE_BYTES) return outcome(413, { error: 'Inbox replies are limited to 32 KiB' })
   if (message.parts.length === 0 && state !== 'failed' && state !== 'rejected') {
     return outcome(400, { error: 'Nothing to send: give "text" or "parts"' })
   }
 
-  const { data: task } = await supabaseAdmin
-    .from('agent_tasks')
-    .select('id, state, created_at, proxy_call_id')
-    .eq('id', /^[0-9a-f-]{36}$/i.test(taskId) ? taskId : '00000000-0000-0000-0000-000000000000')
-    .eq('target_agent_id', agentId)
-    .maybeSingle()
-  if (!task) return outcome(404, { error: 'Task not found in your inbox' })
-  if (!OPEN_STATES.includes(task.state)) {
-    return outcome(409, { error: `Task is already "${task.state}"` })
-  }
-
-  const now = new Date()
-  const terminal = state !== 'input-required'
-  const { data: updated } = await supabaseAdmin
-    .from('agent_tasks')
-    .update({
-      state,
-      response: message,
-      claimed_until: null,
-      updated_at: now.toISOString(),
-      completed_at: terminal ? now.toISOString() : null,
-    })
-    .eq('id', task.id)
-    .in('state', OPEN_STATES)
-    .select('id, state')
-    .maybeSingle()
-  if (!updated) return outcome(409, { error: 'Task changed while you answered — check your inbox again' })
-
-  await Promise.all([
-    task.proxy_call_id
-      ? supabaseAdmin
-          .from('proxy_calls')
-          .update({ status_code: STATUS_CODE[state], latency_ms: now.getTime() - Date.parse(task.created_at) })
-          .eq('id', task.proxy_call_id)
-      : Promise.resolve(),
-    supabaseAdmin.from('agents').update({ last_seen_at: now.toISOString() }).eq('id', agentId),
-  ])
-
-  return outcome(200, { ok: true, task: updated })
+  if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(taskId)) return outcome(404, { error: 'Task not found' })
+  const { data: status, error } = await supabaseAdmin.rpc('answer_inbox_task', {
+    p_agent: agentId, p_task: taskId, p_state: state, p_message: message,
+  })
+  if (error) return outcome(503, { error: 'Could not save reply' })
+  if (status !== 200) return outcome(status, { error: status === 404 ? 'Task not found in your inbox' : 'Task is closed or expired' })
+  return outcome(200, { ok: true, task: { id: taskId, state } })
 }

@@ -1,3 +1,4 @@
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { BASE_URL } from '@/lib/brand'
 import { authorizePath, checkAuthorizationRequest, signedInUser, type AuthorizeParams } from '@/lib/oauth/authorize'
 import { clientRedirect } from '@/lib/oauth/rules'
@@ -81,7 +82,12 @@ export async function POST(request: Request) {
   }
 
   const agentId = typeof params.agent_id === 'string' ? params.agent_id : ''
-  const agent = (await eligibleAgents(user.id)).find((candidate) => candidate.id === agentId)
+  const eligible = await eligibleAgents(user.id)
+  let agent: { id: string } | undefined = eligible.find((candidate) => candidate.id === agentId)
+  if (agentId === 'new-private' && typeof params.agent_name === 'string' && params.agent_name.trim() && params.agent_name.length <= 80) {
+    const { data, error } = await supabaseAdmin.rpc('register_private_inbox', { p_name: params.agent_name, p_owner: user.id })
+    if (!error && data) agent = { id: data }
+  }
   if (!agent) {
     return page('Pick one of your agents', 'The app can only act as an agent your account has claimed. Go back and choose one.', 400)
   }

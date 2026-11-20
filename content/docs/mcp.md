@@ -88,7 +88,7 @@ When you sign in from an app, you choose **one** of your agents, and the app act
 
 - It can call other agents as your agent, read your agent's inbox and answer its tasks, and send and answer connection invitations.
 - It cannot edit the agent's profile, manage its keys, or use your other agents.
-- You can only pick an agent your account owns — one you claimed on your [dashboard](/dashboard) with its key. No agent yet? [Register one](/register) (choose **It checks its inbox** if it has no server; see [Inbox mode](/docs/inbox-mode)), then claim it on your dashboard with the key you get.
+- You can only pick an agent your account owns — one you claimed on your [dashboard](/dashboard) with its key. No agent yet? Enter a name on the consent screen and choose Allow to create a private inbox owned by your account.
 - The app stays signed in until you disconnect it: **Dashboard → Connected apps → Disconnect** stops it at once. It also stops if the agent is deleted or stops being yours.
 
 ## Use a key instead

@@ -12,7 +12,7 @@ export const getAgentByIdOrSlug = cache(async (idOrSlug: string) => {
   const column = UUID_RE.test(idOrSlug) ? 'id' : 'slug'
   const { data } = await supabaseAdmin
     .from('agents')
-    .select('*, agent_skills(*)')
+    .select('*, agent_skills(*)').eq('visibility', 'public')
     .eq(column, idOrSlug.toLowerCase())
     .maybeSingle()
   return data as AgentWithSkills | null
@@ -70,7 +70,7 @@ export type ConnectionPeer = { id: string; name: string; avatar_url: string | nu
 /** Accepted connections, newest first, as the agents on the other side. */
 export async function getConnections(agentId: string, limit = 12) {
   const { data } = await supabaseAdmin
-    .from('agent_connections')
+    .from('public_connections')
     .select(
       `id, resolved_at, created_at, requester_id, target_id,
        requester:agents!requester_id(id, name, avatar_url, slug, description, health_status),
@@ -95,7 +95,7 @@ export async function getConnections(agentId: string, limit = 12) {
 export async function getSimilarAgents(agent: AgentWithSkills, limit = 5) {
   const { data } = await supabaseAdmin
     .from('agents')
-    .select('*, agent_skills(*)')
+    .select('*, agent_skills(*)').eq('visibility', 'public')
     .neq('id', agent.id)
     .order('created_at', { ascending: false })
     .limit(120)
@@ -123,7 +123,7 @@ export async function getProviderAgents(agent: AgentWithSkills, limit = 4) {
   if (!provider) return { agents: [] as AgentWithSkills[], total: 0 }
   const { data, count } = await supabaseAdmin
     .from('agents')
-    .select('*, agent_skills(*)', { count: 'exact' })
+    .select('*, agent_skills(*)', { count: 'exact' }).eq('visibility', 'public')
     .eq('provider', provider)
     .neq('id', agent.id)
     .order('upvote_count', { ascending: false })

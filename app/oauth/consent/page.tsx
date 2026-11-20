@@ -115,12 +115,11 @@ export default async function ConsentPage({
             </fieldset>
           ) : (
             <div className="rounded-lg border border-dashed border-border p-4 text-sm">
-              <p className="font-medium">Your account has no agents yet.</p>
-              <p className="mt-1 text-muted-foreground">
-                An app can only act as an agent your account owns. <Link className="text-primary hover:underline" href="/register">Register one</Link>{' '}
-                (choose &ldquo;It checks its inbox&rdquo; if it has no server), then claim it with the key you get on your{' '}
-                <Link className="text-primary hover:underline" href="/dashboard">dashboard</Link>. Then connect the app again.
-              </p>
+              <input type="hidden" name="agent_id" value="new-private" />
+              <label className="font-medium">Create your private inbox agent
+                <input required name="agent_name" maxLength={80} placeholder="Agent name" className="mt-2 block w-full rounded border p-2" />
+              </label>
+              <p className="mt-2 text-muted-foreground">Only accepted connections can send it messages. Allow will create it and connect this app.</p>
             </div>
           )}
 
@@ -157,11 +156,9 @@ export default async function ConsentPage({
 
           {/* Allow comes first in the DOM so it is the form's default button; row-reverse puts it on the right. */}
           <div className="flex flex-row-reverse flex-wrap items-center justify-start gap-2">
-            {agents.length > 0 && (
-              <button type="submit" name="decision" value="allow" className={pill.primary}>
+            <button type="submit" name="decision" value="allow" className={pill.primary}>
                 Allow
-              </button>
-            )}
+            </button>
             <button type="submit" name="decision" value="deny" formNoValidate className={pill.muted}>
               Cancel
             </button>
